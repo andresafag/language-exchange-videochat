@@ -1,0 +1,63 @@
+body { font-family: sans-serif; background: #f0f2f5; text-align: center; }
+.container { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; padding: 20px; }
+
+.card { 
+    text-decoration: none; color: #333; background: white; 
+    width: 250px; border-radius: 15px; overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover { 
+    transform: translateY(-10px); 
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+.card-image { 
+    height: 150px; 
+    background-size: contain;    /* Muestra la imagen completa */
+    background-repeat: no-repeat; /* Evita que la imagen se duplique */
+    background-position: center;  /* La mantiene centrada */
+    background-color: #fff;       /* Fondo blanco por si la imagen es pequeña */
+    margin-top: 10px;             /* Espacio opcional arriba */
+}
+
+.card-content { padding: 15px; }
+
+
+#video-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  padding: 20px;
+}
+
+
+.video-container {
+    background: #222; 
+    border: 2px solid #444;
+    width: 320px;
+    height: 240px; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 4px solid transparent; /* Espacio reservado para que no salte el diseño */
+    transition: border 0.2s ease, box-shadow 0.2s ease;    
+
+}
+
+video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Esto estira la imagen para llenar el cuadro */
+    background: #000;
+}
+
+.video-container.speaking {
+  border-color: #00ff00;
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.6);
+}
+
+

@@ -1,0 +1,25 @@
+doctype html
+html(lang="es")
+  head
+    title= titulo
+    link(rel="stylesheet", href="/style.css")
+  body
+    block content
+  h1 Selecciona una Sala
+  .container
+    each sala in salas
+      //- Cambiamos el link por una función de JS
+      div.card(onclick=`entrarSala('${sala.id}')` style="cursor:pointer")
+        div.card-image(style=`background-image: url(${sala.img})`)
+        div.card-content
+          h2= sala.nombre
+
+  script.
+    function entrarSala(id) {
+      const nombre = prompt("Ingresa tu nombre para la videollamada:");
+      if (nombre) {
+        // Guardamos el nombre en sessionStorage para usarlo en la siguiente página
+        sessionStorage.setItem('userName', nombre);
+        window.location.href = `/sala/${id}`;
+      }
+    }
