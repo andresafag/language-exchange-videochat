@@ -17,7 +17,14 @@ html
 
         const videoGrid = document.getElementById('video-grid');
         const socket = io({ transports: ['websocket'] });
-        const myPeer = new Peer(); 
+        const myPeer = new Peer(undefined, {
+          config: {
+            'iceServers': [
+              { url: 'stun:://google.com' },
+              { url: 'stun:://google.com' }
+            ]
+          }
+        }); 
 
         myPeer.on('open', (id) => {
           console.log('✅ Mi Peer ID:', id);
