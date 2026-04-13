@@ -1,5 +1,5 @@
 const express = require('express');
-const https = require('https');
+const http = require('http');
 const fs = require('fs');
 // const opcionesHttps = {
 //   key: fs.readFileSync('key.pem'),
@@ -10,8 +10,7 @@ const fs = require('fs');
 
 const { Server } = require('socket.io');
 const app = express();
-// Crear el servidor HTTPS
-const server = https.createServer(app);
+const server = http.createServer(app);
 const io = new Server(server);
 const path = require('path');
 app.use('/peerjs', express.static(path.join(__dirname, 'node_modules/peerjs/dist')));
