@@ -1,17 +1,17 @@
 const express = require('express');
 const https = require('https');
 const fs = require('fs');
-const opcionesHttps = {
-  key: fs.readFileSync('key.pem'),
-  cert: fs.readFileSync('cert.pem')
-};
+// const opcionesHttps = {
+//   key: fs.readFileSync('key.pem'),
+//   cert: fs.readFileSync('cert.pem')
+// };
 
 
 
 const { Server } = require('socket.io');
 const app = express();
 // Crear el servidor HTTPS
-const server = https.createServer(opcionesHttps, app);
+const server = https.createServer(app);
 const io = new Server(server);
 const path = require('path');
 app.use('/peerjs', express.static(path.join(__dirname, 'node_modules/peerjs/dist')));
@@ -28,11 +28,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 const salas = [
-    { id: 'en', nombre: 'Inglés', pais: 'EE.UU.', img: '/liberty.png' },
-    { id: 'zh', nombre: 'Chino Mandarín', pais: 'China', img: '/china.png' },
-    { id: 'hi', nombre: 'Hindi', pais: 'India', img: '/india.png' },
-    { id: 'es', nombre: 'Español', pais: 'España', img: '/spain.png' },
-    { id: 'fr', nombre: 'Francés', pais: 'Francia', img: '/eiffel.png' }
+    { id: 'en', nombre: 'Inglés', pais: 'EE.UU.', img: 'https://speakswap-website.s3.us-east-1.amazonaws.com/public/liberty.png' },
+    { id: 'zh', nombre: 'Chino Mandarín', pais: 'China', img: 'https://speakswap-website.s3.us-east-1.amazonaws.com/public/china.png' },
+    { id: 'hi', nombre: 'Hindi', pais: 'India', img: 'https://speakswap-website.s3.us-east-1.amazonaws.com/public/india.png' },
+    { id: 'es', nombre: 'Español', pais: 'España', img: 'https://speakswap-website.s3.us-east-1.amazonaws.com/public/spain.png' },
+    { id: 'fr', nombre: 'Francés', pais: 'Francia', img: 'https://speakswap-website.s3.us-east-1.amazonaws.com/public/eiffel.png' }
 ];
 
 // Ruta 1: Inicio (Lista de salas)
@@ -70,7 +70,4 @@ io.on('connection', (socket) => {
 
 
 server.listen(3000, '0.0.0.0', () => {
-    console.log('Servidor HTTPS seguro corriendo en:');
-    console.log('Local: https://localhost:3000');
-    console.log('Red:   https://TU-IP-LOCAL:3000');
-});
+  console.log('Servidor HTTPS escuchando en el puerto 3000');});
