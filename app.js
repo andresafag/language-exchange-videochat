@@ -11,7 +11,13 @@ const fs = require('fs');
 const { Server } = require('socket.io');
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server);
+const io = new Server(server, {
+  cors: {
+    origin: '*',
+    methods: ['GET', 'POST']
+  },
+  transports: ['websocket']
+});
 const path = require('path');
 app.use('/peerjs', express.static(path.join(__dirname, 'node_modules/peerjs/dist')));
 
