@@ -16,10 +16,10 @@ html
         if (typeof io === 'undefined') return console.error("Socket.io no cargó");
 
         const videoGrid = document.getElementById('video-grid');
-        const socket = io({ transports: ['websocket'], upgrade: false });
+        const socket = io();
         const myPeer = new Peer(undefined, {
           config: {
-            iceTransportPolicy: 'relay',
+            iceTransportPolicy: 'all',
             'iceServers': [
               { urls: 'stun:54.167.115.229:3478' },
               { urls: 'turn:54.167.115.229:3478', username: 'testuser', credential: 'testpassword'}
