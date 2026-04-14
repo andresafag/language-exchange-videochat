@@ -55,7 +55,6 @@ html
             socket.on('user-connected', (userId) => {
               console.log('Conectando a nuevo usuario:', userId);
               if (!document.getElementById(userId)) {
-                setTimeout(() => {
                   const call = myPeer.call(userId, stream);
                   const video = document.createElement('video');
                   
@@ -69,7 +68,7 @@ html
                   });
 
                   peers[userId] = call;
-                }, 1500);
+                
               }
             });
           })
