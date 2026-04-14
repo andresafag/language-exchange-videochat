@@ -53,6 +53,7 @@ io.on('connection', (socket) => {
     // 1. Contar cuántas personas hay en la sala actualmente
     const room = io.sockets.adapter.rooms.get(roomId);
     const numUsuarios = room ? room.size : 0;
+    
 
     // 2. Si hay 10 o más, avisar al usuario y no dejarlo entrar
     if (numUsuarios >= 10) {

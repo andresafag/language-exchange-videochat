@@ -32,6 +32,8 @@ html
           socket.emit('join-room', "#{sala.id}", id);
         });
 
+        
+
         // 1. Obtener Cámara y Micrófono
         navigator.mediaDevices.getUserMedia({ video: true, audio: true })
           .then((stream) => {
@@ -44,7 +46,7 @@ html
               call.answer(stream);
               const video = document.createElement('video');
               call.on('stream', (userStream) => {
-                addVideoStream(video, userStream, "Invitado", call.peer);
+                addVideoStream(video, userStream, sessionStorage.getItem('userName'), call.peer);
               });
               call.on('close', () => {
                 video.closest('.video-container').remove();
