@@ -19,6 +19,7 @@ html
         const socket = io({ transports: ['websocket'], upgrade: false });
         const myPeer = new Peer(undefined, {
           config: {
+            iceTransportPolicy: 'relay'
             'iceServers': [
               { urls: 'stun:54.167.115.229:3478' },
               { urls: 'turn:54.167.115.229:3478', username: 'testuser', credential: 'testpassword'}
