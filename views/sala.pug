@@ -16,7 +16,7 @@ html
         if (typeof io === 'undefined') return console.error("Socket.io no cargó");
 
         const videoGrid = document.getElementById('video-grid');
-        const socket = io("https://avgts9f85z.us-east-1.awsapprunner.com"});
+        const socket = io("https://avgts9f85z.us-east-1.awsapprunner.com");
         const myPeer = new Peer(undefined, {
           config: {
             iceTransportPolicy: 'all',
