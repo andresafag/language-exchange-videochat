@@ -1,0 +1,21 @@
+name: Security scan
+
+on: [push]
+
+jobs:
+  machine:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step to check out your repository's code
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          # Disabling shallow clones is recommended for better analysis relevancy
+          fetch-depth: 0
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v7.2.0
+        with:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          
