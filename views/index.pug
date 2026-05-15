@@ -2,19 +2,37 @@ doctype html
 html(lang="es")
   head
     title= titulo
+    link(rel="stylesheet", href="https://googleapis.com")
     link(rel="stylesheet", href="https://speakswap-website.s3.us-east-1.amazonaws.com/public/style.css")
   body
     block content
-  h1 Selecciona una Sala
-  .container
-    each sala in salas
-      //- Cambiamos el link por una función de JS
-      div.card(onclick=`entrarSala('${sala.id}')` style="cursor:pointer")
-        div.card-image(style=`background-image: url(${sala.img})`)
-        div.card-content
-          h2= sala.nombre
+    
+    //- Añadimos un span vacío con un ID o clase para identificarlo
+    h1 Choose a room to join 
+      span#typed-text
+    
+    .container
+      each sala in salas
+        div(
+          class=`card card-${sala.id}` 
+          onclick=`entrarSala('${sala.id}')` 
+          style="cursor:pointer"
+        )
+          div.card-image(style=`background-image: url(${sala.img})`)
+          div.card-content
+            h2= sala.nombre
 
+  script(src="https://unpkg.com/typed.js@2.1.0/dist/typed.umd.js")
   script.
+    var typed = new Typed('#typed-text', {
+        strings: ['English', 'Hindi', 'Chinese', 'Spanish', 'French'],
+        typeSpeed: 80,      // Velocidad al escribir (ms)
+        backSpeed: 50,      // Velocidad al borrar (ms)
+        backDelay: 1500,    // Tiempo de espera antes de borrar (ms)
+        loop: true,         // Repetir infinitamente
+        showCursor: true,   // Muestra la barra vertical de escritura
+        cursorChar: '|'     // Carácter del cursor
+      });
     function entrarSala(id) {
       const nombre = prompt("Ingresa tu nombre para la videollamada:");
       if (nombre) {

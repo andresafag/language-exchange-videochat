@@ -1,5 +1,6 @@
 const express = require('express');
 const http = require('http');
+// const https = require('https')
 const fs = require('fs');
 // const opcionesHttps = {
 //   key: fs.readFileSync('key.pem'),
@@ -11,6 +12,7 @@ const fs = require('fs');
 const { Server } = require('socket.io');
 const app = express();
 const server = http.createServer(app);
+// const server = https.createServer(opcionesHttps, app);
 const io = new Server(server, {
   cors: {
     origin: '*',
@@ -49,24 +51,22 @@ app.get('/sala/:id', (req, res) => {
 });
 
 io.on('connection', (socket) => {
-  socket.on('join-room', (roomId, userId) => {
+  socket.on('join-room', (roomId, userId, userName) => {
     // 1. Contar cuántas personas hay en la sala actualmente
     const room = io.sockets.adapter.rooms.get(roomId);
     const numUsuarios = room ? room.size : 0;
     
 
-    // 2. Si hay 10 o más, avisar al usuario y no dejarlo entrar
     if (numUsuarios >= 10) {
       socket.emit('sala-llena', roomId);
       return; // Detenemos la ejecución aquí
     }
 
-    // 3. Si hay espacio, procedemos normal
     socket.join(roomId);
     socket.to(roomId).emit('user-connected', userId);
 
     socket.on('disconnect', () => {
-      socket.to(roomId).emit('user-disconnected', userId);
+      socket.to(roomId).emit('user-disconnected', userId, userName);
     });
   });
 });

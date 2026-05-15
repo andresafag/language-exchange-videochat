@@ -29,7 +29,8 @@ html
 
         myPeer.on('open', (id) => {
           console.log('✅ Mi Peer ID:', id);
-          socket.emit('join-room', "#{sala.id}", id);
+          const name = sessionStorage.getItem('userName') || "Invitado";
+          socket.emit('join-room', "#{sala.id}", id, name);
         });
 
         
@@ -45,8 +46,10 @@ html
             myPeer.on('call', (call) => {
               call.answer(stream);
               const video = document.createElement('video');
+              const nombreEntrante = call.metadata.userName || "Usuario";
               call.on('stream', (userStream) => {
-                addVideoStream(video, userStream, sessionStorage.getItem('userName'), call.peer);
+                addVideoStream(video, userStream, nombreEntrante, call.peer);
+                
               });
               call.on('close', () => {
                 video.closest('.video-container').remove();
@@ -54,14 +57,14 @@ html
             });
 
             // Conectar con nuevos usuarios
-            socket.on('user-connected', (userId) => {
-              console.log('Conectando a nuevo usuario:', userId);
+            socket.on('user-connected', (userId, userName) => {
+              console.log('Conectando a nuevo usuario:', userName);
               if (!document.getElementById(userId)) {
-                  const call = myPeer.call(userId, stream);
+                  const call = myPeer.call(userId, stream,{ metadata: { userName: sessionStorage.getItem('userName') } });
                   const video = document.createElement('video');
                   
                   call.on('stream', (userStream) => {
-                    addVideoStream(video, userStream, "Conectado", userId);
+                    addVideoStream(video, userStream, userName, userId);
                   });
 
                   call.on('close', () => {
