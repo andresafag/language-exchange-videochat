@@ -49,15 +49,15 @@ html
           .then((stream) => {
             const myVideo = document.createElement('video');
             myVideo.muted = true;
-            if roomId === "en" {
+            if (roomId === "en") {
               addVideoStream(myVideo, stream, "Me", "local-user");
-            } else if roomId === "hi" {
+            } else if (roomId === "hi") {
               addVideoStream(myVideo, stream, "मैं", "local-user");
-            } else if roomId === "zh" {
+            } else if (roomId === "zh") {
               addVideoStream(myVideo, stream, "我", "local-user");
-            } else if roomId === "es" {
+            } else if (roomId === "es") {
               addVideoStream(myVideo, stream, "Yo", "local-user");
-            } else if roomId === "fr" {
+            } else if (roomId === "fr") {
               addVideoStream(myVideo, stream, "Moi", "local-user");
             }
 
