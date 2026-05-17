@@ -7,15 +7,15 @@ html
     script(src="https://speakswap-website.s3.us-east-1.amazonaws.com/peerjs.min.js")
   body
     - const roomId = sala.id
-    if "#{sala.id}" == "en"
+    if (roomId === "en")
       h1 Room: English
-    else if "#{sala.id}" == "hi"
+    else if (roomId === "hi")
       h1 Room: Hindi
-    else if "#{sala.id}" == "zh"
+    else if (roomId === "zh")
       h1 Room: Chinese
-    else if "#{sala.id}" == "es"
+    else if (roomId === "es")
       h1 Sala: Español
-    else if "#{sala.id}" == "fr"
+    else if (roomId === "fr")
       h1 Chambre: Francais 
     #video-grid
 
