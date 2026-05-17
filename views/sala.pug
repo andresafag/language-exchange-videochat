@@ -22,7 +22,7 @@ html
     script.
       const peers = {};
       const roomId = "#{sala.id}"; 
-      const targetIp = "!{ipTarget}"; 
+      const targetIp = "!{secretIP}"; 
 
       window.onload = function() {
         if (typeof io === 'undefined') return console.error("Socket.io no cargó");
