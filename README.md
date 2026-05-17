@@ -25,7 +25,7 @@ Learning a language requires practice, especially speaking. Speakswap removes fr
 
 ## 🔗 Live Demo
 
-🌐 https://your-app-url.com  
+🌐 https://avgts9f85z.us-east-1.awsapprunner.com  
 
 ## ✨ Features
 

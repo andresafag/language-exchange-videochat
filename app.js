@@ -47,7 +47,8 @@ app.get('/', (req, res) => {
 // Ruta 2: Detalle de sala
 app.get('/sala/:id', (req, res) => {
     const sala = salas.find(s => s.id === req.params.id);
-    res.render('sala', { sala });
+    const secretIP = process.env.MY_TARGET_IP 
+    res.render('sala', { sala , secretIP});
 });
 
 io.on('connection', (socket) => {
