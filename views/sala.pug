@@ -10,7 +10,7 @@ html
     #video-grid
 
     script.
-      const peers = {}; // Objeto para rastrear las llamadas activas
+      const peers = {};
 
       window.onload = function() {
         if (typeof io === 'undefined') return console.error("Socket.io no cargó");
@@ -21,8 +21,8 @@ html
           config: {
             iceTransportPolicy: 'all',
             'iceServers': [
-              { urls: 'stun:172.31.27.50:3478' },
-              { urls: 'turn:172.31.27.50:3478', username: 'testuser', credential: 'testpassword'}
+              { urls: 'stun:54.145.55.163:3478' },
+              { urls: 'turn:54.145.55.163:3478', username: 'testuser', credential: 'testpassword'}
             ]
           }
         }); 
@@ -39,7 +39,7 @@ html
         navigator.mediaDevices.getUserMedia({ video: true, audio: true })
           .then((stream) => {
             const myVideo = document.createElement('video');
-            myVideo.muted = true; // Silenciamos nuestro propio video para evitar eco
+            myVideo.muted = true;
             addVideoStream(myVideo, stream, "Yo", "local-user");
 
             // Responder llamadas entrantes

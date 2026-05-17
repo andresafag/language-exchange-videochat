@@ -52,14 +52,13 @@ app.get('/sala/:id', (req, res) => {
 
 io.on('connection', (socket) => {
   socket.on('join-room', (roomId, userId, userName) => {
-    // 1. Contar cuántas personas hay en la sala actualmente
     const room = io.sockets.adapter.rooms.get(roomId);
     const numUsuarios = room ? room.size : 0;
     
 
     if (numUsuarios >= 10) {
       socket.emit('sala-llena', roomId);
-      return; // Detenemos la ejecución aquí
+      return;
     }
 
     socket.join(roomId);
