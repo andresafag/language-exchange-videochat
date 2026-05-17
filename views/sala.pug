@@ -20,6 +20,7 @@ html
 
     script.
       const peers = {};
+      const roomId = "#{sala.id}"; 
 
       window.onload = function() {
         if (typeof io === 'undefined') return console.error("Socket.io no cargó");
@@ -47,15 +48,15 @@ html
           .then((stream) => {
             const myVideo = document.createElement('video');
             myVideo.muted = true;
-            if "#{sala.id}" == "en" {
+            if roomId === "en" {
               addVideoStream(myVideo, stream, "Me", "local-user");
-            } else if "#{sala.id}" == "hi" {
+            } else if roomId === "hi" {
               addVideoStream(myVideo, stream, "मैं", "local-user");
-            } else if "#{sala.id}" == "zh" {
+            } else if roomId === "zh" {
               addVideoStream(myVideo, stream, "我", "local-user");
-            } else if "#{sala.id}" == "es" {
+            } else if roomId === "es" {
               addVideoStream(myVideo, stream, "Yo", "local-user");
-            } else if "#{sala.id}" == "fr" {
+            } else if roomId === "fr" {
               addVideoStream(myVideo, stream, "Moi", "local-user");
             }
 
