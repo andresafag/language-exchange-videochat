@@ -54,7 +54,6 @@ io.on('connection', (socket) => {
   socket.on('join-room', (roomId, userId, userName) => {
     const room = io.sockets.adapter.rooms.get(roomId);
     const numUsuarios = room ? room.size : 0;
-    
 
     if (numUsuarios >= 10) {
       socket.emit('sala-llena', roomId);
@@ -62,13 +61,38 @@ io.on('connection', (socket) => {
     }
 
     socket.join(roomId);
-    socket.to(roomId).emit('user-connected', userId);
 
+    // Notificar a los demás que entró un nuevo usuario
+    socket.to(roomId).emit('user-connected', userId, userName);
+
+    // Enviar al nuevo usuario la lista de los que ya estaban en la sala
+    const usuariosExistentes = [];
+    if (room) {
+      for (const peerId of room) {
+        if (peerId !== socket.id) {
+          const peerSocket = io.sockets.sockets.get(peerId);
+          if (peerSocket && peerSocket.data) {
+            usuariosExistentes.push({
+              id: peerSocket.data.userId,
+              name: peerSocket.data.userName
+            });
+          }
+        }
+      }
+    }
+    socket.emit('existing-users', usuariosExistentes);
+
+    // Guardar datos del usuario en el socket para referencia futura
+    socket.data.userId = userId;
+    socket.data.userName = userName;
+
+    // Manejar desconexión
     socket.on('disconnect', () => {
       socket.to(roomId).emit('user-disconnected', userId, userName);
     });
   });
 });
+
 
 
 server.listen(3000, '0.0.0.0', () => {

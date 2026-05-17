@@ -1,3 +1,162 @@
+//- doctype html
+//- html
+//-   head
+//-     title Sala #{sala.nombre}
+//-     link(rel="stylesheet", href="https://speakswap-website.s3.us-east-1.amazonaws.com/public/style.css")
+//-     script(src="/socket.io/socket.io.js")
+//-     script(src="https://speakswap-website.s3.us-east-1.amazonaws.com/peerjs.min.js")
+//-   body
+//-     h1 Sala: #{sala.nombre}
+//-     #video-grid
+
+//-     script.
+//-       const peers = {};
+
+//-       window.onload = function() {
+//-         if (typeof io === 'undefined') return console.error("Socket.io no cargó");
+
+//-         const videoGrid = document.getElementById('video-grid');
+//-         const socket = io("https://avgts9f85z.us-east-1.awsapprunner.com");
+//-         const myPeer = new Peer(undefined, {
+//-           config: {
+//-             iceTransportPolicy: 'all',
+//-             'iceServers': [
+//-               { urls: 'stun:54.145.55.163:3478' },
+//-               { urls: 'turn:54.145.55.163:3478', username: 'testuser', credential: 'testpassword'}
+//-             ]
+//-           }
+//-         }); 
+
+//-         myPeer.on('open', (id) => {
+//-           console.log('✅ Mi Peer ID:', id);
+//-           const name = sessionStorage.getItem('userName') || "Invitado";
+//-           socket.emit('join-room', "#{sala.id}", id, name);
+//-         });
+
+        
+
+//-         // 1. Obtener Cámara y Micrófono
+//-         navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+//-           .then((stream) => {
+//-             const myVideo = document.createElement('video');
+//-             myVideo.muted = true;
+//-             addVideoStream(myVideo, stream, "Yo", "local-user");
+
+//-             // Responder llamadas entrantes
+//-             myPeer.on('call', (call) => {
+//-               call.answer(stream);
+//-               const video = document.createElement('video');
+//-               const nombreEntrante = call.metadata.userName || "Usuario";
+//-               call.on('stream', (userStream) => {
+//-                 addVideoStream(video, userStream, nombreEntrante, call.peer);
+                
+//-               });
+//-               call.on('close', () => {
+//-                 video.closest('.video-container').remove();
+//-               });
+//-             });
+
+//-             // Conectar con nuevos usuarios
+//-             socket.on('user-connected', (userId, userName) => {
+//-               console.log('Conectando a nuevo usuario:', userName);
+//-               if (!document.getElementById(userId)) {
+//-                   const call = myPeer.call(userId, stream,{ metadata: { userName: sessionStorage.getItem('userName') } });
+//-                   const video = document.createElement('video');
+                  
+//-                   call.on('stream', (userStream) => {
+//-                     addVideoStream(video, userStream, userName, userId);
+//-                   });
+
+//-                   call.on('close', () => {
+//-                     const el = document.getElementById(userId);
+//-                     if (el) el.remove();
+//-                   });
+
+//-                   peers[userId] = call;
+                
+//-               }
+//-             });
+//-           })
+//-           .catch((err) => console.error('Error acceso multimedia:', err));
+
+//-         // 2. Escuchar desconexión desde el servidor
+//-         socket.on('user-disconnected', (userId) => {
+//-           console.log('Usuario desconectado:', userId);
+//-           if (peers[userId]) {
+//-             peers[userId].close();
+//-             delete peers[userId];
+//-           }
+//-           const el = document.getElementById(userId);
+//-           if (el) el.remove();
+//-         });
+
+//-         // 3. Función para añadir video y activar el monitor de voz
+//-         function addVideoStream(video, stream, nombre, userId) {
+//-           if (userId && document.getElementById(userId)) return;
+
+//-           video.srcObject = stream;
+//-           video.autoplay = true;
+//-           video.playsInline = true;
+          
+//-           video.onloadedmetadata = () => {
+//-             video.play().catch(e => console.error("Error play:", e));
+//-           };
+
+//-           const div = document.createElement('div');
+//-           div.className = 'video-container';
+//-           if (userId) div.id = userId; 
+          
+//-           const p = document.createElement('p');
+//-           p.innerText = nombre;
+          
+//-           div.append(video);
+//-           div.append(p);
+//-           videoGrid.append(div);
+
+//-           // Iniciar detector de voz si el stream tiene audio
+//-           if (stream.getAudioTracks().length > 0) {
+//-             monitorizarVolumen(stream, userId);
+//-           }
+//-         }
+
+//-         // 4. Analizador de Audio para la franja verde
+//-         function monitorizarVolumen(stream, elementId) {
+//-           try {
+//-             const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+//-             const analyser = audioContext.createAnalyser();
+//-             const source = audioContext.createMediaStreamSource(stream);
+//-             source.connect(analyser);
+
+//-             analyser.fftSize = 512;
+//-             const bufferLength = analyser.frequencyBinCount;
+//-             const dataArray = new Uint8Array(bufferLength);
+
+//-             function verificar() {
+//-               analyser.getByteFrequencyData(dataArray);
+//-               let sum = 0;
+//-               for (let i = 0; i < bufferLength; i++) {
+//-                 sum += dataArray[i];
+//-               }
+//-               const promedio = sum / bufferLength;
+//-               const contenedor = document.getElementById(elementId);
+
+//-               if (contenedor) {
+//-                 // Ajusta el '30' según la sensibilidad deseada
+//-                 if (promedio > 30) {
+//-                   contenedor.classList.add('speaking');
+//-                 } else {
+//-                   contenedor.classList.remove('speaking');
+//-                 }
+//-               }
+//-               requestAnimationFrame(verificar);
+//-             }
+//-             verificar();
+//-           } catch (e) {
+//-             console.error("Error en AudioContext:", e);
+//-           }
+//-         }
+//-       };
+
 doctype html
 html
   head
@@ -33,8 +192,6 @@ html
           socket.emit('join-room', "#{sala.id}", id, name);
         });
 
-        
-
         // 1. Obtener Cámara y Micrófono
         navigator.mediaDevices.getUserMedia({ video: true, audio: true })
           .then((stream) => {
@@ -46,36 +203,42 @@ html
             myPeer.on('call', (call) => {
               call.answer(stream);
               const video = document.createElement('video');
-              const nombreEntrante = call.metadata.userName || "Usuario";
+              const nombreEntrante = call.metadata?.userName || "Usuario";
               call.on('stream', (userStream) => {
                 addVideoStream(video, userStream, nombreEntrante, call.peer);
-                
               });
               call.on('close', () => {
-                video.closest('.video-container').remove();
+                video.closest('.video-container')?.remove();
               });
             });
 
             // Conectar con nuevos usuarios
             socket.on('user-connected', (userId, userName) => {
               console.log('Conectando a nuevo usuario:', userName);
-              if (!document.getElementById(userId)) {
-                  const call = myPeer.call(userId, stream,{ metadata: { userName: sessionStorage.getItem('userName') } });
-                  const video = document.createElement('video');
-                  
-                  call.on('stream', (userStream) => {
-                    addVideoStream(video, userStream, userName, userId);
-                  });
-
-                  call.on('close', () => {
-                    const el = document.getElementById(userId);
-                    if (el) el.remove();
-                  });
-
-                  peers[userId] = call;
-                
-              }
+              connectToNewUser(userId, userName, stream);
             });
+
+            // Conectar con usuarios existentes al entrar
+            socket.on('existing-users', (users) => {
+              users.forEach(({id, name}) => {
+                console.log('Conectando a usuario existente:', name);
+                connectToNewUser(id, name, stream);
+              });
+            });
+
+            function connectToNewUser(userId, userName, stream) {
+              if (!document.getElementById(userId)) {
+                const call = myPeer.call(userId, stream, { metadata: { userName: sessionStorage.getItem('userName') } });
+                const video = document.createElement('video');
+                call.on('stream', (userStream) => {
+                  addVideoStream(video, userStream, userName, userId);
+                });
+                call.on('close', () => {
+                  document.getElementById(userId)?.remove();
+                });
+                peers[userId] = call;
+              }
+            }
           })
           .catch((err) => console.error('Error acceso multimedia:', err));
 
@@ -86,8 +249,7 @@ html
             peers[userId].close();
             delete peers[userId];
           }
-          const el = document.getElementById(userId);
-          if (el) el.remove();
+          document.getElementById(userId)?.remove();
         });
 
         // 3. Función para añadir video y activar el monitor de voz
@@ -141,7 +303,6 @@ html
               const contenedor = document.getElementById(elementId);
 
               if (contenedor) {
-                // Ajusta el '30' según la sensibilidad deseada
                 if (promedio > 30) {
                   contenedor.classList.add('speaking');
                 } else {
