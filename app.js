@@ -62,10 +62,14 @@ io.on('connection', (socket) => {
 
     socket.join(roomId);
 
-    // Notificar a los demás que entró un nuevo usuario
+    // Guardar datos del usuario en el socket
+    socket.data.userId = userId;
+    socket.data.userName = userName;
+
+    // Notificar a los demás
     socket.to(roomId).emit('user-connected', userId, userName);
 
-    // Enviar al nuevo usuario la lista de los que ya estaban en la sala
+    // Enviar al nuevo la lista de usuarios existentes
     const usuariosExistentes = [];
     if (room) {
       for (const peerId of room) {
@@ -82,16 +86,13 @@ io.on('connection', (socket) => {
     }
     socket.emit('existing-users', usuariosExistentes);
 
-    // Guardar datos del usuario en el socket para referencia futura
-    socket.data.userId = userId;
-    socket.data.userName = userName;
-
     // Manejar desconexión
     socket.on('disconnect', () => {
       socket.to(roomId).emit('user-disconnected', userId, userName);
     });
   });
 });
+
 
 
 

@@ -68,9 +68,15 @@ html
               const nombreEntrante = call.metadata?.userName || "Usuario";
               call.on('stream', (userStream) => {
                 addVideoStream(video, userStream, nombreEntrante, call.peer);
+                // Fallback: remove when tracks end
+                userStream.getTracks().forEach(track => {
+                  track.addEventListener('ended', () => {
+                    document.getElementById(call.peer)?.remove();
+                  });
+                });
               });
               call.on('close', () => {
-                video.closest('.video-container')?.remove();
+                document.getElementById(call.peer)?.remove();
               });
             });
 
