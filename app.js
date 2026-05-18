@@ -67,32 +67,33 @@ io.on('connection', (socket) => {
     socket.data.userId = userId;
     socket.data.userName = userName;
 
-    // Notificar a los demás
-    socket.to(roomId).emit('user-connected', userId, userName);
-
-    // Enviar al nuevo la lista de usuarios existentes
-    const usuariosExistentes = [];
-    if (room) {
-      for (const peerId of room) {
-        if (peerId !== socket.id) {
-          const peerSocket = io.sockets.sockets.get(peerId);
-          if (peerSocket && peerSocket.data) {
-            usuariosExistentes.push({
-              id: peerSocket.data.userId,
-              name: peerSocket.data.userName
-            });
-          }
-        }
-      }
-    }
-    socket.emit('existing-users', usuariosExistentes);
+    // Emitir lista completa de usuarios a todos en la sala
+    io.to(roomId).emit('room-users', getUsersInRoom(roomId));
 
     // Manejar desconexión
     socket.on('disconnect', () => {
-      socket.to(roomId).emit('user-disconnected', userId, userName);
+      io.to(roomId).emit('room-users', getUsersInRoom(roomId));
     });
   });
 });
+
+// Helper para obtener usuarios de la sala
+function getUsersInRoom(roomId) {
+  const room = io.sockets.adapter.rooms.get(roomId);
+  const usuarios = [];
+  if (room) {
+    for (const peerId of room) {
+      const peerSocket = io.sockets.sockets.get(peerId);
+      if (peerSocket && peerSocket.data) {
+        usuarios.push({
+          id: peerSocket.data.userId,
+          name: peerSocket.data.userName
+        });
+      }
+    }
+  }
+  return usuarios;
+}
 
 
 

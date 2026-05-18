@@ -87,6 +87,24 @@ html
               connectToNewUser(userId, userName, stream);
             });
 
+            // Reconciliar lista completa de usuarios
+            socket.on('room-users', (users) => {
+              users.forEach(({id, name}) => {
+                if (id !== myPeer.id && !peers[id]) {
+                  connectToNewUser(id, name, stream);
+                }
+              });
+
+              // Eliminar usuarios que ya no están
+              Object.keys(peers).forEach(id => {
+                if (!users.find(u => u.id === id)) {
+                  peers[id].close();
+                  delete peers[id];
+                  document.getElementById(id)?.remove();
+                }
+              });
+            });
+
             // Conectar con usuarios existentes al entrar
             socket.on('existing-users', (users) => {
               users.forEach(({id, name}) => {
