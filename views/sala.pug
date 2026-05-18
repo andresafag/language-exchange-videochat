@@ -18,25 +18,25 @@ html
     #video-grid
 
   script(type="module").
-    import { connect } from 'https://cdn.livekit.io/livekit-client-v1.16.0.min.js';
-  
+    import { connect } from 'https://cdn.jsdelivr.net/npm/livekit-client@1.16.0/dist/livekit-client.min.js';
+
     async function joinRoom() {
       const roomId = "#{sala.id}";
       const name = sessionStorage.getItem('userName') || "Invitado";
-  
+
       // Fetch token from backend
       const token = await fetch(`/getToken?room=${roomId}&name=${name}`).then(r => r.text());
-  
+
       // Connect to LiveKit
       const room = await connect("wss://3.229.212.146:7881", token, {
         audio: true,
         video: true
       });
-  
+
       // Show local video
       const localEl = room.localParticipant.videoTracks.values().next().value.track.attach();
       document.getElementById('video-grid').append(localEl);
-  
+
       // Handle remote participants
       room.on('participantConnected', participant => {
         participant.on('trackSubscribed', (track) => {
@@ -44,7 +44,7 @@ html
           document.getElementById('video-grid').append(el);
         });
       });
-  
+
       room.on('participantDisconnected', participant => {
         // remove their video element
         participant.tracks.forEach(pub => {
@@ -55,7 +55,7 @@ html
         });
       });
     }
-  
+
     joinRoom();
 
     //- script.
