@@ -1,4 +1,4 @@
-import { connect } from 'https://cdn.jsdelivr.net/npm/livekit-client@1.16.0/dist/livekit-client.esm.js';
+import { connect } from 'livekit-client';
 
 async function joinRoom() {
   const roomId = "#{sala.id}"; // Pug will interpolate this
