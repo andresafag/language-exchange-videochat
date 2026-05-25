@@ -244,3 +244,107 @@ video {
   overflow-x: auto; /* Permite scroll horizontal si entran demasiados usuarios */
 }
 
+
+/*---------------------------------------------*/
+
+/* === Estilos del Formulario Modal === */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-content {
+  background: #1e1e24;
+  padding: 30px;
+  border-radius: 15px;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+  border: 1px solid #3a3a4a;
+  transform: translateY(-20px);
+  transition: transform 0.3s ease;
+  color: #fff;
+}
+
+.modal-overlay.active .modal-content {
+  transform: translateY(0);
+}
+
+.modal-content h3 {
+  margin-top: 0;
+  font-size: 22px;
+  margin-bottom: 20px;
+  color: #fff;
+}
+
+.modal-input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 20px;
+  border: 2px solid #3a3a4a;
+  border-radius: 8px;
+  background: #121214;
+  color: #fff;
+  font-size: 16px;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.modal-input:focus {
+  border-color: #7289da;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.btn {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-primary {
+  background: #7289da;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #5b73c7;
+}
+
+.btn-secondary {
+  background: #3a3a4a;
+  color: #bbb;
+}
+
+.btn-secondary:hover {
+  background: #4a4a5a;
+  color: #fff;
+}
+

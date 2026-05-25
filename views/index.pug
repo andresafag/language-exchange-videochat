@@ -3,7 +3,7 @@ html(lang="es")
   head
     title= titulo
     link(rel="stylesheet", href="https://googleapis.com")
-    link(rel="stylesheet", href="https://speakswap-website.s3.us-east-1.amazonaws.com/public/style.css")
+    link(rel="stylesheet", href="https://speakswap-website.s3.us-east-1.amazonaws.com/style.css")
   body
     block content
     
@@ -14,29 +14,20 @@ html(lang="es")
       each sala in salas
         div(
           class=`card card-${sala.id}` 
-          onclick=`entrarSala('${sala.id}')` 
+          onclick=`abrirModal('${sala.id}')`  
           style="cursor:pointer"
         )
           div.card-image(style=`background-image: url(${sala.img})`)
           div.card-content
             h2= sala.nombre
+    div#nameModal.modal-overlay
+      div.modal-content
+        h3 Configura tu Perfil
+        p Introduce tu nombre para unirte a la videollamada:
+        input#userInput.modal-input(type="text", placeholder="Tu nombre o alias...", maxlength="20")
+        div.modal-buttons
+          button.btn.btn-secondary(onclick="cerrarModal()") Cancelar
+          button.btn.btn-primary(onclick="confirmarIngreso()") Unirse a la Sala
 
   script(src="https://unpkg.com/typed.js@2.1.0/dist/typed.umd.js")
-  script.
-    var typed = new Typed('#typed-text', {
-        strings: ['English', 'Hindi', 'Chinese', 'Spanish', 'French'],
-        typeSpeed: 80,      // Velocidad al escribir (ms)
-        backSpeed: 50,      // Velocidad al borrar (ms)
-        backDelay: 1500,    // Tiempo de espera antes de borrar (ms)
-        loop: true,         // Repetir infinitamente
-        showCursor: true,   // Muestra la barra vertical de escritura
-        cursorChar: '|'     // Carácter del cursor
-      });
-    function entrarSala(id) {
-      const nombre = prompt("Ingresa tu nombre para la videollamada:");
-      if (nombre) {
-        // Guardamos el nombre en sessionStorage para usarlo en la siguiente página
-        sessionStorage.setItem('userName', nombre);
-        window.location.href = `/sala/${id}`;
-      }
-    }
+  script(src="https://speakswap-website.s3.us-east-1.amazonaws.com/script.js")
