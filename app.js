@@ -19,7 +19,7 @@ const salas = [
 ];
 
 const roomService = new RoomServiceClient(
-  "3-229-212-146.nip.io", 
+  "https://3-229-212-146.nip.io", 
   "myappkey", 
   "myappsecret"
 );
