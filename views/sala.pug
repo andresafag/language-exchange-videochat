@@ -17,75 +17,75 @@ html
       h1 Chambre: Francais 
     #video-grid
 
-  script.
-    const LIVEKIT_TOKEN = "!{token}";
-    const LIVEKIT_URL = "!{livekitUrl}";
-
-    // 2. Cargamos el archivo LOCAL que acabamos de copiar (Cero dependencias de CDN externos)
-  script(src="https://speakswap-website.s3.us-east-1.amazonaws.com/js/livekit-client.umd.js")
-  script.
-      // Validamos dinámicamente cualquier variante de mayúsculas que use el bundle
-      const livekitSDK = window.LivekitClient || window.LiveKitClient;
-
-      if (!livekitSDK) {
-        alert("Error: El archivo local de LiveKit no se cargó correctamente. Revisa la ruta.");
-      }
-      else {
-        console.log("good")
-      }
-      const { Room, RoomEvent } = livekitSDK;
-      console.log(Room)
-      // Función auxiliar para renderizar las ventanas de video
-      function createVideoElement(track, participantIdentity, isLocal = false) {
-        const grid = document.getElementById('video-grid');
-        
-        const container = document.createElement('div');
-        container.className = 'video-container';
-        container.id = `container-${participantIdentity}`;
-
-        const videoEl = track.attach();
-        if (isLocal) videoEl.style.transform = 'scaleX(-1)'; // Efecto espejo para el usuario local
-
-        const tag = document.createElement('div');
-        tag.className = 'username-tag';
-        tag.innerText = isLocal ? `${participantIdentity} (Tú)` : participantIdentity;
-
-        container.appendChild(videoEl);
-        container.appendChild(tag);
-        grid.appendChild(container);
-      }
-
-      async function joinVideoChat() {
-        // Inicializamos la configuración de la sala
-        const room = new Room({ adaptiveStream: true, dynacast: true });
-
-        // Evento: Se ejecuta cuando otro participante enciende su cámara
-        room.on(RoomEvent.TrackSubscribed, (track, publication, participant) => {
-          if (track.kind === 'video') {
-            createVideoElement(track, participant.identity, false);
-          }
-        });
-
-        // Evento: Se ejecuta cuando un participante apaga la cámara o abandona la sala
-        room.on(RoomEvent.TrackUnsubscribed, (track, publication, participant) => {
-          track.detach();
-          const container = document.getElementById(`container-${participant.identity}`);
-          if (container) container.remove();
-        });
-
-        // Conexión al backend de LiveKit Docker en tu instancia EC2
-        await room.connect(LIVEKIT_URL, LIVEKIT_TOKEN);
-        console.log("Conectado con éxito a LiveKit!");
-
-        // Activamos cámara y micrófono locales e inyectamos nuestro feed
-        await room.localParticipant.enableCameraAndMicrophone();
-        const localVideoTrack = room.localParticipant.getTrackPublication('camera').videoTrack;
-        if (localVideoTrack) {
-          createVideoElement(localVideoTrack, room.localParticipant.identity, true);
+    script.
+      const LIVEKIT_TOKEN = "!{token}";
+      const LIVEKIT_URL = "!{livekitUrl}";
+  
+      // 2. Cargamos el archivo LOCAL que acabamos de copiar (Cero dependencias de CDN externos)
+    script(src="https://speakswap-website.s3.us-east-1.amazonaws.com/js/livekit-client.umd.js")
+    script.
+        // Validamos dinámicamente cualquier variante de mayúsculas que use el bundle
+        const livekitSDK = window.LivekitClient || window.LiveKitClient;
+  
+        if (!livekitSDK) {
+          alert("Error: El archivo local de LiveKit no se cargó correctamente. Revisa la ruta.");
         }
-      }
-
-      // Iniciamos el flujo automático de conexión
-      joinVideoChat().catch(console.error);
+        else {
+          console.log("good")
+        }
+        const { Room, RoomEvent } = livekitSDK;
+        console.log(Room)
+        // Función auxiliar para renderizar las ventanas de video
+        function createVideoElement(track, participantIdentity, isLocal = false) {
+          const grid = document.getElementById('video-grid');
+          
+          const container = document.createElement('div');
+          container.className = 'video-container';
+          container.id = `container-${participantIdentity}`;
+  
+          const videoEl = track.attach();
+          if (isLocal) videoEl.style.transform = 'scaleX(-1)'; // Efecto espejo para el usuario local
+  
+          const tag = document.createElement('div');
+          tag.className = 'username-tag';
+          tag.innerText = isLocal ? `${participantIdentity} (Tú)` : participantIdentity;
+  
+          container.appendChild(videoEl);
+          container.appendChild(tag);
+          grid.appendChild(container);
+        }
+  
+        async function joinVideoChat() {
+          // Inicializamos la configuración de la sala
+          const room = new Room({ adaptiveStream: true, dynacast: true });
+  
+          // Evento: Se ejecuta cuando otro participante enciende su cámara
+          room.on(RoomEvent.TrackSubscribed, (track, publication, participant) => {
+            if (track.kind === 'video') {
+              createVideoElement(track, participant.identity, false);
+            }
+          });
+  
+          // Evento: Se ejecuta cuando un participante apaga la cámara o abandona la sala
+          room.on(RoomEvent.TrackUnsubscribed, (track, publication, participant) => {
+            track.detach();
+            const container = document.getElementById(`container-${participant.identity}`);
+            if (container) container.remove();
+          });
+  
+          // Conexión al backend de LiveKit Docker en tu instancia EC2
+          await room.connect(LIVEKIT_URL, LIVEKIT_TOKEN);
+          console.log("Conectado con éxito a LiveKit!");
+  
+          // Activamos cámara y micrófono locales e inyectamos nuestro feed
+          await room.localParticipant.enableCameraAndMicrophone();
+          const localVideoTrack = room.localParticipant.getTrackPublication('camera').videoTrack;
+          if (localVideoTrack) {
+            createVideoElement(localVideoTrack, room.localParticipant.identity, true);
+          }
+        }
+  
+        // Iniciamos el flujo automático de conexión
+        joinVideoChat().catch(console.error);
 
     
