@@ -15,6 +15,8 @@ html
       h1 Sala: Español
     else if (roomId === "fr")
       h1 Chambre: Francais 
+
+    button.btn-leave(onclick="window.location.href='/'") Volver al Inicio
     #video-grid
 
     script.
@@ -34,7 +36,6 @@ html
           console.log("good")
         }
         const { Room, RoomEvent } = livekitSDK;
-        console.log(Room)
         let activeRoom = null;
         // Función auxiliar para renderizar las ventanas de video
         function createVideoElement(track, participantIdentity, isLocal = false) {
@@ -54,67 +55,80 @@ html
           container.appendChild(videoEl);
           container.appendChild(tag);
           if (isLocal) {
-        const controlsDiv = document.createElement('div');
-        controlsDiv.className = 'local-controls';
+            const controlsDiv = document.createElement('div');
+            controlsDiv.className = 'local-controls';
 
-        // Botón de Micrófono
-        const micBtn = document.createElement('button');
-        micBtn.className = 'control-btn mic-on';
-        micBtn.innerHTML = '🎤'; // Icono básico, puedes usar FontAwesome después
-        micBtn.onclick = () => toggleMic(micBtn);
+            // Botón de Micrófono
+            const micBtn = document.createElement('button');
+            micBtn.className = 'control-btn mic-on';
+            micBtn.innerHTML = '🎤'; // Icono básico, puedes usar FontAwesome después
+            micBtn.onclick = () => toggleMic(micBtn);
 
-        // Botón de Cámara
-        const camBtn = document.createElement('button');
-        camBtn.className = 'control-btn cam-on';
-        camBtn.innerHTML = '📷';
-        camBtn.onclick = () => toggleCam(camBtn);
+            // Botón de Cámara
+            const camBtn = document.createElement('button');
+            camBtn.className = 'control-btn cam-on';
+            camBtn.innerHTML = '📷';
+            camBtn.onclick = () => toggleCam(camBtn);
 
-        controlsDiv.appendChild(micBtn);
-        controlsDiv.appendChild(camBtn);
-        container.appendChild(controlsDiv);
-      }
+            controlsDiv.appendChild(micBtn);
+            controlsDiv.appendChild(camBtn);
+            container.appendChild(controlsDiv);
+          }
           grid.appendChild(container);
         }
 
-            // Lógica nativa de LiveKit para silenciar/activar Micrófono
         async function toggleMic(button) {
           if (!activeRoom) return;
-          const audioTrack = activeRoom.localParticipant.getTrackPublication('microphone')?.audioTrack;
+          const isMicEnabled = activeRoom.localParticipant.isMicrophoneEnabled;
 
-          if (audioTrack) {
-            if (audioTrack.isMuted) {
-              await audioTrack.setEnabled(true);
+
+          try {
+            if (!isMicEnabled) {
+              // Si estaba apagado, lo encendemos de forma nativa
+              await activeRoom.localParticipant.setMicrophoneEnabled(true);
               button.innerHTML = '🎤';
               button.className = 'control-btn mic-on';
+              console.log("Micrófono encendido con éxito");
             } else {
-              await audioTrack.setEnabled(false);
+              // Si estaba encendido, lo apagamos de forma nativa
+              await activeRoom.localParticipant.setMicrophoneEnabled(false);
               button.innerHTML = '🔇';
               button.className = 'control-btn mic-off';
+              console.log("Micrófono silenciado con éxito");
             }
+          } catch (error) {
+            console.error("Error al cambiar el estado del micrófono:", error);
           }
         }
 
         // Lógica nativa de LiveKit para apagar/encender Cámara
         async function toggleCam(button) {
           if (!activeRoom) return;
-          const videoTrack = activeRoom.localParticipant.getTrackPublication('camera')?.videoTrack;
+          const isCamEnabled = activeRoom.localParticipant.isCameraEnabled;
 
-          if (videoTrack) {
-            if (videoTrack.isMuted) {
-              await videoTrack.setEnabled(true);
+          try {
+            if (!isCamEnabled) {
+              // Si estaba apagada, la encendemos de forma nativa
+              await activeRoom.localParticipant.setCameraEnabled(true);
               button.innerHTML = '📷';
               button.className = 'control-btn cam-on';
+              console.log("Cámara encendida con éxito");
             } else {
-              await videoTrack.setEnabled(false);
-              button.innerHTML = '❌'; // Icono de cámara apagada
+              // Si estaba encendida, la apagamos de forma nativa
+              await activeRoom.localParticipant.setCameraEnabled(false);
+              button.innerHTML = '❌'; 
               button.className = 'control-btn cam-off';
+              console.log("Cámara apagada con éxito");
             }
+          } catch (error) {
+            console.error("Error al cambiar el estado de la cámara:", error);
           }
-           }
+        }
   
         async function joinVideoChat() {
           // Inicializamos la configuración de la sala
           const room = new Room({ adaptiveStream: true, dynacast: true });
+          activeRoom = room
   
           // Evento: Se ejecuta cuando otro participante enciende su cámara
           room.on(RoomEvent.TrackSubscribed, (track, publication, participant) => {
