@@ -1,5 +1,5 @@
 const express = require('express');
-const { AccessToken } = require('livekit-server-sdk');
+const { AccessToken, RoomServiceClient } = require('livekit-server-sdk')
 const fs = require('fs');
 const app = express();
 const path = require('path');
@@ -18,6 +18,12 @@ const salas = [
     { id: 'fr', nombre: 'Francés', pais: 'Francia', img: 'https://speakswap-website.s3.us-east-1.amazonaws.com/eiffel.png' }
 ];
 
+const roomService = new RoomServiceClient(
+  "3-229-212-146.nip.io", 
+  "myappkey", 
+  "myappsecret"
+);
+
 // Route to render index page
 app.get('/', (req, res) => {
   res.render('index', { salas });
@@ -27,7 +33,13 @@ app.get('/', (req, res) => {
 app.get('/sala/:id', async (req, res) => {
   const roomId = req.params.id; // 'en', 'es', etc.
   const participantName = req.query.name || `User-${Math.floor(Math.random() * 100)}`;
-   const participants = await roomService.listParticipants(roomId)
+  const participants = await roomService.listParticipants(roomId);
+    
+    // 2. Verificación de límite estricto
+  if (participants.length >= 10) {
+    // Si la sala está llena, redirigimos al index enviando un parámetro de error
+    return res.redirect(`/?error=sala_llena&salaName=${encodeURIComponent(sala.nombre)}`);
+  }
 
   // Find your existing sala object to pass to pug layout (matching your current logic)
   const sala = salas.find(s => s.id === roomId) //|| { id: roomId, nombre: roomId };
@@ -38,10 +50,7 @@ app.get('/sala/:id', async (req, res) => {
       identity: participantName,
     });
 
-    if ( participants > 2) {
-      return
-    }
-    
+
     at.addGrant({ roomJoin: true, room: roomId });
     const token = await at.toJwt();
 

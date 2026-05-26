@@ -9,6 +9,19 @@ var typed = new Typed('#typed-text', {
   cursorChar: '|'
 });
 
+// Validamos si la URL de regreso contiene un aviso de error por aforo lleno
+document.addEventListener("DOMContentLoaded", () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const errorType = urlParams.get('error');
+  const salaName = urlParams.get('salaName');
+
+  if (errorType === 'sala_llena') {
+    alert(`Lo sentimos, la sala de "${salaName}" ya alcanzó el límite máximo de 10 participantes. Intenta unirte a otra habitación.`);
+    // Limpiamos la URL para estética visual borrando los parámetros de error
+    window.history.replaceState({}, document.title, "/");
+  }
+});
+
 // Variables globales para controlar el estado del modal
 let salaSeleccionada = null;
 const modal = document.getElementById('nameModal');

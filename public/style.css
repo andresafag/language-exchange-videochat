@@ -348,3 +348,47 @@ video {
   color: #fff;
 }
 
+/* === Botones de control flotantes dentro del video === */
+.local-controls {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  display: flex;
+  gap: 8px;
+  z-index: 10;
+}
+
+.control-btn {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  border: 1px solid #3a3a4a;
+  color: white;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 16px;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.control-btn:hover {
+  transform: scale(1.1);
+  background: rgba(114, 137, 218, 0.9); /* Color morado/azul tipo Discord */
+  border-color: #7289da;
+}
+
+/* Variaciones de estados apagados */
+.control-btn.mic-off, .control-btn.cam-off {
+  background: rgba(240, 71, 71, 0.8); /* Rojo de alerta */
+  border-color: #f04747;
+}
+
+.control-btn.mic-off:hover, .control-btn.cam-off:hover {
+  background: rgba(240, 71, 71, 1);
+}
+
+

@@ -52,8 +52,64 @@ html
   
           container.appendChild(videoEl);
           container.appendChild(tag);
+          if (isLocal) {
+        const controlsDiv = document.createElement('div');
+        controlsDiv.className = 'local-controls';
+
+        // Botón de Micrófono
+        const micBtn = document.createElement('button');
+        micBtn.className = 'control-btn mic-on';
+        micBtn.innerHTML = '🎤'; // Icono básico, puedes usar FontAwesome después
+        micBtn.onclick = () => toggleMic(micBtn);
+
+        // Botón de Cámara
+        const camBtn = document.createElement('button');
+        camBtn.className = 'control-btn cam-on';
+        camBtn.innerHTML = '📷';
+        camBtn.onclick = () => toggleCam(camBtn);
+
+        controlsDiv.appendChild(micBtn);
+        controlsDiv.appendChild(camBtn);
+        container.appendChild(controlsDiv);
+      }
           grid.appendChild(container);
         }
+
+            // Lógica nativa de LiveKit para silenciar/activar Micrófono
+        async function toggleMic(button) {
+          if (!activeRoom) return;
+          const audioTrack = activeRoom.localParticipant.getTrackPublication('microphone')?.audioTrack;
+          
+          if (audioTrack) {
+            if (audioTrack.isMuted) {
+              await audioTrack.setEnabled(true);
+              button.innerHTML = '🎤';
+              button.className = 'control-btn mic-on';
+            } else {
+              await audioTrack.setEnabled(false);
+              button.innerHTML = '🔇';
+              button.className = 'control-btn mic-off';
+            }
+          }
+        }
+      
+        // Lógica nativa de LiveKit para apagar/encender Cámara
+        async function toggleCam(button) {
+          if (!activeRoom) return;
+          const videoTrack = activeRoom.localParticipant.getTrackPublication('camera')?.videoTrack;
+          
+          if (videoTrack) {
+            if (videoTrack.isMuted) {
+              await videoTrack.setEnabled(true);
+              button.innerHTML = '📷';
+              button.className = 'control-btn cam-on';
+            } else {
+              await videoTrack.setEnabled(false);
+              button.innerHTML = '❌'; // Icono de cámara apagada
+              button.className = 'control-btn cam-off';
+            }
+          }
+           }
   
         async function joinVideoChat() {
           // Inicializamos la configuración de la sala
