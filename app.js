@@ -45,7 +45,7 @@ app.get('/sala/:id', async (req, res) => {
     res.render('sala', {
       sala,
       token,
-      livekitUrl: `wss://3.229.212.146.nip.io`
+      livekitUrl: 'wss://3-229-212-146.nip.io'
     });
   } catch (error) {
     console.error("Error generating LiveKit token:", error);
