@@ -134,13 +134,13 @@ html
           // Si el navegador bloqueó la reproducción automática de sonido de los demás...
           if (!room.canPlaybackAudio) {
             console.warn("El navegador bloqueó el audio entrante. Solicitando interacción...");
-            
+
             // Creamos un banner o aviso discreto flotante en la pantalla para obligar a dar un clic
             const audioBanner = document.createElement('div');
             audioBanner.id = 'audio-start-banner';
             audioBanner.style = "position: fixed; top: 10px; left: 50%; transform: translateX(-50%); background: #f04747; color: white; padding: 12px 24px; border-radius: 8px; font-weight: bold; z-index: 9999; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.5);";
             audioBanner.innerText = "🔊 Haz clic aquí para activar el audio de los participantes";
-            
+
             // Al hacer clic en el banner, disparamos el desbloqueo nativo del WebRTC del navegador
             audioBanner.onclick = async () => {
               try {
@@ -151,7 +151,7 @@ html
                 console.error("No se pudo iniciar el canal de audio:", err);
               }
             };
-            
+
             document.body.appendChild(audioBanner);
           }
         });
@@ -160,6 +160,11 @@ html
           room.on(RoomEvent.TrackSubscribed, (track, publication, participant) => {
             if (track.kind === 'video') {
               createVideoElement(track, participant.identity, false);
+            }
+            if (track.kind === 'audio') {
+              console.log(`Recibiendo canal de audio de: ${participant.identity}`);
+              const audioEl = track.attach();
+              document.body.appendChild(audioEl);
             }
           });
   
