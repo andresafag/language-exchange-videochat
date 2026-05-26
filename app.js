@@ -26,8 +26,8 @@ app.get('/', (req, res) => {
 
 app.get('/sala/:id', async (req, res) => {
   const roomId = req.params.id; // 'en', 'es', etc.
-  console.log(req.params)
   const participantName = req.query.name || `User-${Math.floor(Math.random() * 100)}`;
+   const participants = await roomService.listParticipants(roomId)
 
   // Find your existing sala object to pass to pug layout (matching your current logic)
   const sala = salas.find(s => s.id === roomId) //|| { id: roomId, nombre: roomId };
@@ -37,6 +37,10 @@ app.get('/sala/:id', async (req, res) => {
     const at = new AccessToken('myappkey', 'myappsecret', {
       identity: participantName,
     });
+
+    if ( participants > 2) {
+      return
+    }
     
     at.addGrant({ roomJoin: true, room: roomId });
     const token = await at.toJwt();

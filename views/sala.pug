@@ -78,8 +78,10 @@ html
           console.log("Conectado con éxito a LiveKit!");
   
           // Activamos cámara y micrófono locales e inyectamos nuestro feed
-          await room.localParticipant.enableCameraAndMicrophone();
-          const localVideoTrack = room.localParticipant.getTrackPublication('camera').videoTrack;
+          const videoPublication = await room.localParticipant.setCameraEnabled(true);
+          await room.localParticipant.setMicrophoneEnabled(true);
+          console.log('Cámara y Micrófono activados');          
+          const localVideoTrack = videoPublication.videoTrack;
           if (localVideoTrack) {
             createVideoElement(localVideoTrack, room.localParticipant.identity, true);
           }
