@@ -19,7 +19,7 @@ const salas = [
 ];
 
 const roomService = new RoomServiceClient(
-  "https://3-229-212-146.nip.io", 
+`htps://${MY_TARGET_IP}`,
   "myappkey", 
   "myappsecret"
 );
@@ -36,7 +36,7 @@ app.get('/sala/:id', async (req, res) => {
   const participants = await roomService.listParticipants(roomId);
     
     // 2. Verificación de límite estricto
-  if (participants.length >= 10) {
+  if (participants.length >= 2) {
     // Si la sala está llena, redirigimos al index enviando un parámetro de error
     return res.redirect(`/?error=sala_llena&salaName=${encodeURIComponent(sala.nombre)}`);
   }
@@ -58,7 +58,7 @@ app.get('/sala/:id', async (req, res) => {
     res.render('sala', {
       sala,
       token,
-      livekitUrl: 'wss://3-229-212-146.nip.io'
+      livekitUrl: `wss://${MY_TARGET_IP}`
     });
   } catch (error) {
     console.error("Error generating LiveKit token:", error);
