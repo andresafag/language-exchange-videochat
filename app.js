@@ -8,7 +8,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
-
+const REMOTE_IP = process.env.MY_TARGET_IP
 
 const salas = [
     { id: 'en', nombre: 'Inglés', pais: 'EE.UU.', img: 'https://speakswap-website.s3.us-east-1.amazonaws.com/liberty.png' },
@@ -19,7 +19,7 @@ const salas = [
 ];
 
 const roomService = new RoomServiceClient(
-`htps://${process.env.MY_TARGET_IP}`,
+`https://${REMOTE_IP}`,
   "myappkey", 
   "myappsecret"
 );
@@ -58,7 +58,7 @@ app.get('/sala/:id', async (req, res) => {
     res.render('sala', {
       sala,
       token,
-      livekitUrl: `wss://${process.env.MY_TARGET_IP}`
+      livekitUrl: `wss://${REMOTE_IP}`
     });
   } catch (error) {
     console.error("Error generating LiveKit token:", error);
