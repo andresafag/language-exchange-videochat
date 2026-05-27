@@ -36,7 +36,7 @@ app.get('/sala/:id', async (req, res) => {
   const participants = await roomService.listParticipants(roomId);
     
     // 2. Verificación de límite estricto
-  if (participants.length >= 2) {
+  if (participants.length >= 9) {
     // Si la sala está llena, redirigimos al index enviando un parámetro de error
     return res.redirect(`/?error=sala_llena&salaName=${encodeURIComponent(sala.nombre)}`);
   }
@@ -64,6 +64,10 @@ app.get('/sala/:id', async (req, res) => {
     console.error("Error generating LiveKit token:", error);
     res.status(500).send("Server Error configuration LiveKit token.");
   }
+});
+
+app.get('/full', (req, res) => {
+  res.render('full');
 });
 
 
