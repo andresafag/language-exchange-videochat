@@ -19,7 +19,7 @@ const salas = [
 ];
 
 const roomService = new RoomServiceClient(
-`htps://${MY_TARGET_IP}`,
+`htps://${process.env.MY_TARGET_IP}`,
   "myappkey", 
   "myappsecret"
 );
@@ -58,7 +58,7 @@ app.get('/sala/:id', async (req, res) => {
     res.render('sala', {
       sala,
       token,
-      livekitUrl: `wss://${MY_TARGET_IP}`
+      livekitUrl: `wss://${process.env.MY_TARGET_IP}`
     });
   } catch (error) {
     console.error("Error generating LiveKit token:", error);
