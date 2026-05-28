@@ -1,231 +1,308 @@
-# 🌍🗣️ Speakswap  
-### *Jump into a language, join a room, and start speaking instantly.*
+# 🌍 Speakswap
+
+### Real-Time Language Exchange Platform Powered by WebRTC & LiveKit
 
 ![Node.js](https://img.shields.io/badge/Node.js-18.x-green?logo=node.js)
 ![Express](https://img.shields.io/badge/Express.js-Backend-black?logo=express)
-![PeerJS](https://img.shields.io/badge/WebRTC-PeerJS-blue?logo=webrtc)
+![LiveKit](https://img.shields.io/badge/LiveKit-WebRTC-blue)
+![WebRTC](https://img.shields.io/badge/WebRTC-RealTime-orange)
 ![AWS](https://img.shields.io/badge/Hosted_on-AWS-orange?logo=amazon-aws)
+![Docker](https://img.shields.io/badge/Containerized-Docker-blue?logo=docker)
 ![License](https://img.shields.io/badge/License-MIT-purple)
 
 ---
 
-## 📖 Project Description
+# 📖 Overview
 
-**Speakswap** is a real-time video chat web application designed to help users practice different languages by joining themed rooms 🌐. Each room represents a language (e.g., Spanish 🇪🇸, English 🇺🇸, Hindi 🇮🇳), where users can instantly connect with others via live audio and video.
+**Speakswap** is a real-time video communication platform designed to help users practice foreign languages through spontaneous live conversations.
 
-💡 **Why it was built:**  
-Learning a language requires practice, especially speaking. Speakswap removes friction by allowing users to instantly join live conversations without setup or scheduling.
+Users can instantly join language-based rooms (English, Spanish, Hindi, Mandarin, French, etc.) and communicate through low-latency video and audio streaming powered by **WebRTC** and **LiveKit**.
 
-🚀 **Problem it solves:**  
-- Lack of real-time speaking opportunities  
-- Difficulty finding conversation partners  
-- Barriers to spontaneous language practice  
+The project was built to explore production-grade real-time communication systems, WebRTC networking, NAT traversal, scalable media infrastructure, and cloud-native deployment workflows.
 
 ---
 
-## 🔗 Live Demo
+# 🚀 Live Demo
 
-🌐 https://avgts9f85z.us-east-1.awsapprunner.com  
-
-## ✨ Features
-
-- 🎥 **Instant Video Chat** – Automatically enables camera and microphone upon joining a room  
-- 🌍 **Language-Based Rooms** – Join rooms dedicated to specific languages  
-- ⚡ **Real-Time Communication** – Powered by WebRTC for low-latency interactions  
-- 🔗 **Peer-to-Peer Connections** – Built using PeerJS for scalable connections  
-- 🧠 **Simple UI** – Clean interface using Pug templates  
-- ☁️ **Cloud Deployment** – Hosted on AWS infrastructure  
-- 🔐 **Secure Communication** – TURN/STUN server via Coturn ensures connectivity even behind NATs/firewalls  
+🌐 https://avgts9f85z.us-east-1.awsapprunner.com
 
 ---
 
-## 🛠️ Tech Stack
+# ✨ Features
 
-**Frontend & Templating**
-- 🎨 Pug (Template Engine)
-- 🎨 CSS
-
-**Backend**
-- 🟢 Node.js
-- 🚂 Express.js
-
-**Real-Time Communication**
-- 🔗 PeerJS (WebRTC abstraction layer)
-- 📡 WebRTC (Audio/Video/Data streaming)
-
-**Infrastructure & DevOps**
-- ☁️ AWS App Runner (Node.js server hosting)
-- 🖥️ AWS EC2 (Coturn STUN/TURN server)
-- 🔄 GitHub Actions (CI/CD + security scanning)
-- 📦 GitHub Repository (source control & deployment integration)
+* 🎥 Real-time video & audio communication
+* 🌍 Language-specific conversation rooms
+* ⚡ Low-latency WebRTC streaming using LiveKit
+* 🔊 Active speaker detection & dynamic video stage
+* 🎙️ Camera and microphone controls
+* 🔐 Secure token-based room authentication
+* ☁️ Cloud-native deployment on AWS App Runner
+* 🖥️ TURN/STUN infrastructure using Coturn on EC2
+* 📱 Responsive browser-based experience
+* 🧠 Adaptive streaming & bandwidth optimization
 
 ---
 
+# 🏗️ Architecture
 
-💬 How it works:
+Speakswap uses a modern real-time communication architecture built around **LiveKit**, which abstracts much of the complexity of WebRTC while still exposing production-level RTC concepts.
 
-Select a language room 🌍
-Allow camera & microphone access 🎥🎙️
-Instantly connect with others in the room 🤝
+## High-Level Flow
 
+1. User selects a language room
+2. Express backend generates a secure LiveKit access token
+3. Client connects to LiveKit server over WebSocket
+4. WebRTC media streams are negotiated automatically
+5. Coturn TURN/STUN services assist NAT traversal when necessary
+
+---
+
+# 🛠️ Tech Stack
+
+## Frontend
+
+* Pug Template Engine
+* Vanilla JavaScript
+* CSS
+
+## Backend
+
+* Node.js
+* Express.js
+
+## Real-Time Communication
+
+* LiveKit
+* WebRTC
+* Coturn (TURN/STUN)
+
+## Infrastructure & DevOps
+
+* AWS App Runner
+* AWS EC2
+* Docker
+* GitHub Actions
+* GitHub
+
+---
+
+# ☁️ Cloud Infrastructure
+
+## AWS App Runner
+
+Used to deploy and scale the Node.js application with managed HTTPS and automatic service provisioning.
+
+## EC2 + Coturn
+
+A dedicated EC2 instance hosts Coturn TURN/STUN services to support reliable peer connectivity across restrictive NATs and firewalls.
+
+## Dockerized Services
+
+The application and RTC infrastructure are containerized for portability and easier deployment management.
+
+---
+
+# 🔐 Authentication & Security
+
+Speakswap uses secure server-generated LiveKit JWT access tokens to authenticate users and authorize room access.
+
+Additional security measures include:
+
+* HTTPS via AWS-managed certificates
+* WSS (secure WebSockets)
+* TURN relay fallback for restricted networks
+* Environment-variable based configuration
+
+---
+
+# 📂 Project Structure
+
+```bash
 SPEAKSWAP/
-│── node_modules/        # Dependencies
-│── public/              # Static assets
-│   ├── china.png
-│   ├── eiffel.png
-│   ├── india.png
-│   ├── liberty.png
-│   ├── peers.min.js     # PeerJS client library
-│   ├── spain.png
-│   └── style.css
 │
-│── views/               # Pug templates
-│   ├── index.pug        # Landing page
-│   └── sala.pug         # Room page
+├── public/                  # Static assets
+│   ├── style.css
+│   ├── script.js
+│   └── assets/
 │
-│── app.js               # Main server entry point
-│── Dockerfile           # Container configuration
-│── package.json         # Project metadata & dependencies
-│── package-lock.json    # Dependency lock file
+├── views/                   # Pug templates
+│   ├── index.pug
+│   └── sala.pug
+│
+├── app.js                   # Main Express server
+├── Dockerfile               # Container configuration
+├── package.json
+├── package-lock.json
+│
+└── .github/
+    └── workflows/           # CI/CD pipelines
+```
 
-🧩 Challenges & Learnings
+---
 
-Building Speakswap involved more than just wiring up video calls—it required understanding the complexities of real-time communication, networking, and deployment at scale. Here are some of the key challenges I encountered and what I learned from them:
+# 💬 How It Works
 
-🌐 WebRTC Beyond Local Networks
+1. Select a language room 🌍
+2. Enter a display name 👤
+3. Allow camera & microphone access 🎥🎙️
+4. Connect instantly with participants in the room 🤝
 
-Initially, everything worked perfectly within my local network. Devices could join rooms and communicate seamlessly, which led me to underestimate the importance of a TURN server.
+---
 
-However, once I deployed the application using AWS App Runner, users in different networks were unable to see or hear each other. This exposed a critical gap in my understanding.
+# 🧠 Engineering Challenges & Learnings
 
-💡 What I learned:
+Building Speakswap provided hands-on experience with real-world challenges in distributed communication systems and WebRTC infrastructure.
 
-WebRTC relies on ICE (Interactive Connectivity Establishment) to find the best path between peers
-STUN servers help discover public IPs, but are not always enough
-NATs and firewalls can block direct peer-to-peer connections
+## 🌐 Understanding NAT Traversal
 
-🚀 Solution:
-I implemented a Coturn server on an EC2 instance, which acts as a TURN relay server, allowing media to flow between peers even when direct connections fail.
+One of the biggest challenges was moving from local-only testing to internet-scale connectivity.
 
-👉 This was a turning point in understanding how real-world networking constraints affect peer-to-peer systems.
+While the application worked correctly within the same local network, remote users behind different NATs and firewalls experienced connection failures.
 
-🔐 SSL & Deployment Misconceptions
+### Key Learnings
 
-While setting up secure communication, I initially configured SSL manually using cert.pem and key.pem.
+* How ICE negotiation works
+* Differences between STUN and TURN servers
+* Why direct peer-to-peer communication often fails in production environments
+* The importance of relay fallback infrastructure
 
-Later, I realized that AWS App Runner automatically provisions and manages HTTPS certificates, making my manual setup unnecessary.
+### Solution
 
-💡 What I learned:
+Implemented a dedicated Coturn TURN server hosted on AWS EC2 to relay media traffic when direct peer connections are unavailable.
 
-Managed services like AWS App Runner abstract away infrastructure concerns
-Over-configuring can introduce unnecessary complexity
-Always verify what your platform already provides before implementing custom solutions.
+---
 
-🔄 Managing Real-Time Peer Connections
+## 🚀 Migrating from PeerJS to LiveKit
 
-Handling multiple users joining and leaving rooms dynamically introduced challenges in connection lifecycle management.
+The initial architecture used PeerJS for signaling and peer coordination. As the application evolved, the system was migrated to LiveKit to improve reliability, scalability, and media handling.
 
-💡 Challenges included:
+### Why the Migration Happened
 
-Ensuring new users connect to all existing peers in a room
-Preventing duplicate or stale connections
-Cleaning up connections when users disconnect unexpectedly
+* Better room and participant management
+* More reliable media handling
+* Built-in scalability features
+* Native active speaker detection
+* Improved bandwidth optimization
+* Cleaner production-grade architecture
 
-🧠 What I learned:
+### Key Takeaway
 
-Real-time systems require careful event handling and state synchronization
-Peer-to-peer architectures shift complexity from server → client coordination
-📡 Debugging WebRTC is Hard
+This migration provided valuable experience evaluating architectural tradeoffs between lightweight abstractions and specialized RTC platforms.
 
-Unlike traditional HTTP requests, WebRTC failures are often silent or difficult to trace.
+---
 
-💡 Challenges included:
+## 📡 Debugging WebRTC in Production
 
-No clear error messages when connections fail
-Inconsistent behavior across networks
-Browser-specific quirks
+Debugging RTC systems proved significantly more complex than traditional web applications.
 
-🧠 What I learned:
+### Challenges
 
-Use browser tools like chrome://webrtc-internals for debugging
-Logging ICE candidates and connection states is essential
-Testing across different networks (WiFi, mobile hotspot, etc.) is critical.
+* Silent connection failures
+* Browser autoplay audio restrictions
+* Inconsistent network behavior
+* ICE negotiation failures
+* Media track synchronization
 
+### Tools & Techniques Used
 
-📡 Debugging WebRTC is Hard
+* `chrome://webrtc-internals`
+* ICE candidate logging
+* LiveKit room event inspection
+* Cross-network testing (WiFi, hotspot, VPN)
 
-Unlike traditional HTTP requests, WebRTC failures are often silent or difficult to trace.
+---
 
-💡 Challenges included:
+## ☁️ Cloud Deployment Realities
 
-No clear error messages when connections fail
-Inconsistent behavior across networks
-Browser-specific quirks
+Deploying real-time applications in the cloud introduced multiple operational considerations.
 
-🧠 What I learned:
+### Challenges
 
-Use browser tools like chrome://webrtc-internals for debugging
-Logging ICE candidates and connection states is essential
-Testing across different networks (WiFi, mobile hotspot, etc.) is critical
-⚖️ Tradeoffs of Peer-to-Peer Architecture
+* Environment variable management
+* Secure WebSocket configuration
+* Reverse proxy & SSL behavior
+* Service-to-service networking
+* Cloud latency differences
 
-Using PeerJS simplified WebRTC implementation, but it also came with tradeoffs.
+### Key Learning
 
-💡 Considerations:
+Real-time systems behave very differently in production compared to local development environments.
 
-Easier setup vs. less control over low-level WebRTC behavior
-Scalability limitations as peers increase in a room
-Dependency on signaling server reliability
+---
 
-🧠 What I learned:
+# 📈 Technical Highlights
 
-Abstractions accelerate development but require understanding what’s happening underneath
-Architectural decisions always involve tradeoffs
-☁️ Deployment & Environment Differences
+* Implemented secure JWT-based RTC authentication
+* Integrated LiveKit real-time media infrastructure
+* Designed dynamic participant/video rendering logic
+* Implemented active speaker stage switching
+* Built cloud-native deployment workflow on AWS
+* Configured TURN/STUN infrastructure for global connectivity
+* Managed media device lifecycle and browser permissions
 
-Moving from local development to cloud deployment introduced unexpected issues.
+---
 
-💡 Challenges included:
+# 🔮 Future Improvements
 
-Environment variable differences
-Network restrictions in cloud environments
-Latency and performance variations
+* Chat messaging system
+* Screen sharing support
+* User matchmaking
+* Room moderation
+* Usage analytics
+* Multi-region deployment
+* Authentication system
+* Persistent user profiles
 
-🧠 What I learned:
+---
 
-“Works on my machine” doesn’t translate to production
-Always test in environments that mimic real-world usage
-🚀 Key Takeaway
+# 📜 License
 
-The biggest lesson from building Speakswap is that real-time applications are as much about networking as they are about code.
+This project is licensed under the MIT License.
 
-Understanding concepts like:
+---
 
-NAT traversal
-STUN vs TURN
-Peer connection lifecycles
+# 👨‍💻 Author
 
-…is essential to building reliable, production-ready communication systems.
+## Andrés Acosta
 
+Passionate about:
 
-📜 License
+* Real-time systems
+* Cloud infrastructure
+* WebRTC
+* Backend engineering
+* Distributed applications
 
-This project is licensed under the MIT License 📝
-Feel free to use, modify, and distribute it.
+### Connect With Me
 
-🙌 Acknowledgements & Author
+* LinkedIn: [linkedin profile](https://linkedin.com/in/andrés-acosta-203923238)
+* Email: andresfelipeacostagarcia34@gmail.com
 
-👨‍💻 Andrés Acosta
-📧 Contact: (add your email or LinkedIn here)
+---
+
+# 🙌 Acknowledgements
 
 Special thanks to:
 
-PeerJS community 🔗
-WebRTC ecosystem 🌐
-AWS for cloud infrastructure ☁️
+* LiveKit
+* WebRTC community
+* Coturn project
+* AWS
+* Open-source contributors
 
-⭐ Final Thoughts
+---
 
-Speakswap is all about breaking language barriers and making communication effortless 🌍❤️
-Jump in, turn on your camera, and start speaking!
+# ⭐ Final Notes
 
+Speakswap was built as both a language-learning platform and a deep technical exploration into real-time communication systems.
+
+The project strengthened my understanding of:
+
+* WebRTC architecture
+* Media streaming
+* NAT traversal
+* Cloud deployment
+* Scalable RTC infrastructure
+* Event-driven application design
+
+It represents practical experience building and deploying production-oriented real-time applications from the ground up.

@@ -2,13 +2,14 @@ html, body {
   margin: 0;
   padding: 0;
   width: 100%;
-  min-height: 100vh;
+  height: 100vh; /* Fija el alto total exacto de la pantalla */
   background-color: #121214;
   font-family: Arial, sans-serif;
   color: #ffffff;
   display: flex;
   flex-direction: column;
   align-items: center;
+  overflow: hidden; /* Elimina por completo cualquier barra de scroll */
   box-sizing: border-box;
 }
 
@@ -55,26 +56,11 @@ html, body {
 }
 
 h1 {
-  font-family: 'Poppins', 'Segoe UI', sans-serif;
-  font-weight: 800;
-  letter-spacing: -1px;
   text-align: center;
-  margin: 20px 0 10px 0;
-  font-size: 2.5rem;
+  margin: 1vh 0 0.5vh 0; /* Tamaños basados en el alto de pantalla */
+  font-size: 3.5vh;
   color: #7289da;
   width: 100%;
-  
-  /* Vibrant Gradient Text Effect */
-  background: linear-gradient(135deg, #ff007f, #7000ff, #00c4ff);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  
-  /* 3D Depth Visual Anchor */
-  filter: drop-shadow(2px 4px 10px rgba(112, 0, 255, 0.15));
-  
-  /* Smooth Slide/Pop Entrance Animation */
-  animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
 .container { 
@@ -394,58 +380,67 @@ h1 {
 
 /* === Estilos del Escenario Principal === */
 
+/* === Botón Salir Compacto === */
 .btn-leave {
   background: #f04747;
   color: white;
   border: none;
-  padding: 10px 20px;
-  border-radius: 8px;
+  padding: 0.8vh 16px;
+  border-radius: 6px;
   font-weight: bold;
   cursor: pointer;
-  margin-bottom: 25px;
+  margin-bottom: 2vh;
+  font-size: 1.8vh;
   transition: background 0.2s;
 }
-
-.btn-leave:hover { background: #d83a3a; }
-
-#active-speaker-stage {
-width: 100%;
-height: 70vh; /* Ocupa el 70-80% de la altura visible de la pantalla */
-max-width: 1600px;
-margin: 0 auto 15px auto;
-display: flex;
-justify-content: center;
-align-items: center;
+.btn-leave:hover { 
+  background: #d83a3a; 
 }
 
+#active-speaker-stage {
+  width: 95%;
+  max-width: 1200px;
+  height: 55vh; /* Ocupa el 55% del alto total de la pantalla */
+  margin: 0 auto 2vh auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Forzamos al video del escenario a estirarse sin salirse de su alto asignado */
 #active-speaker-stage .video-container {
   width: 100%;
   height: 100%;
-  max-height: 65vh;
   aspect-ratio: 16 / 9;
-  border-color: #43b581 !important; /* Borde verde brillante */
-  box-shadow: 0 0 35px rgba(67, 181, 129, 0.4);
+  border-color: #43b581 !important;
+  box-shadow: 0 0 25px rgba(67, 181, 129, 0.3);
 }
 
-/* === Estilos de la Grilla Inferior de Participantes === */
+/* === Grilla Inferior de No Activos (Estrictamente 1/4 del tamaño superior) === */
 #video-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 20px;
-  width: 90%;
-  max-width: 1400px;
-  padding-bottom: 40px;
+  display: flex; /* Cambiamos a Flexbox para controlar mejor el desborde horizontal */
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  width: 95%;
+  height: 15vh; /* Ocupa exactamente el 15% del alto de la pantalla (un cuarto de 60vh) */
   margin: 0 auto;
 }
 
+#video-grid .video-container {
+  height: 100%; /* Se acopla al 15vh asignado */
+  aspect-ratio: 16 / 9; /* Mantiene la proporción perfecta de video sin crecer de más */
+}
+
+/* === Estructura Base de los Contenedores de Video === */
 .video-container {
   position: relative;
   background: #1e1e24;
-  border-radius: 16px;
+  border-radius: 12px;
   overflow: hidden;
   border: 2px solid #2e2e38;
   transition: all 0.3s ease;
-  aspect-ratio: 16 / 9;
+  box-sizing: border-box;
 }
 
 video {
@@ -454,25 +449,27 @@ video {
   object-fit: cover;
 }
 
+
+/* Etiquetas e Iconos internos adaptados a pantallas fijas */
 .username-tag {
   position: absolute;
-  bottom: 12px;
-  left: 12px;
+  bottom: 8px;
+  left: 8px;
   background: rgba(0, 0, 0, 0.7);
   backdrop-filter: blur(4px);
   color: #fff;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 14px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
   z-index: 5;
 }
 
 .local-controls {
   position: absolute;
-  bottom: 12px;
-  right: 12px;
+  bottom: 8px;
+  right: 8px;
   display: flex;
-  gap: 8px;
+  gap: 4px;
   z-index: 10;
 }
 
@@ -481,17 +478,19 @@ video {
   backdrop-filter: blur(4px);
   border: 1px solid #3a3a4a;
   color: white;
-  width: 36px;
-  height: 36px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 12px;
   display: flex;
   justify-content: center;
   align-items: center;
   transition: transform 0.2s;
 }
-
+.control-btn:hover {
+  transform: scale(1.1);
+}
 .control-btn.mic-off, .control-btn.cam-off {
   background: rgba(240, 71, 71, 0.8);
   border-color: #f04747;
