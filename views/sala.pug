@@ -17,6 +17,7 @@ html
       h1 Chambre: Francais 
 
     button.btn-leave(onclick="window.location.href='/'") Volver al Inicio
+    div#active-speaker-stage
     #video-grid
 
     script.
@@ -129,6 +130,26 @@ html
           // Inicializamos la configuración de la sala
           const room = new Room({ adaptiveStream: true, dynacast: true });
           activeRoom = room
+
+                    // === LÓGICA DINÁMICA DE REORDENACIÓN EN ESCENARIO ===
+          room.on(RoomEvent.ActiveSpeakersChanged, (speakers) => {
+            const stage = document.getElementById('active-speaker-stage');
+            const grid = document.getElementById('video-grid');
+
+            if (speakers.length > 0) {
+              const loudest = speakers[0];
+              const speakerContainer = document.getElementById(`container-${loudest.identity}`);
+              
+              if (speakerContainer && speakerContainer.parentElement !== stage) {
+                // Si el escenario ya tiene a alguien, regresamos a esa persona a la grilla inferior
+                if (stage.firstChild) {
+                  grid.appendChild(stage.firstChild);
+                }
+                // Movemos al nuevo hablante activo al escenario superior
+                stage.appendChild(speakerContainer);
+              }
+            }
+          });
 
           room.on(RoomEvent.AudioPlaybackStatusChanged, () => {
           // Si el navegador bloqueó la reproducción automática de sonido de los demás...
