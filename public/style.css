@@ -8,7 +8,6 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    min-height: 100vh; 
 }
 
 @media (max-width: 600px) {
@@ -57,7 +56,7 @@ h1 {
   font-family: 'Poppins', 'Segoe UI', sans-serif;
   font-size: 3rem;
   font-weight: 800;
-  margin: 40px 0 10px 0;
+  margin: 10px 0 10px 0;
   letter-spacing: -1px;
   
   /* Vibrant Gradient Text Effect */
@@ -445,20 +444,34 @@ video {
 }
 
 /* === Estilos del Escenario Principal === */
+
+.btn-leave {
+  background: #f04747;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+.btn-leave:hover { background: #d83a3a; }
 #active-speaker-stage {
-  max-width: 800px;
-  margin: 0 auto 20px auto;
-  padding: 0 10px;
-  display: flex;
-  justify-content: center;
+width: 100%;
+height: 70vh; /* Ocupa el 70-80% de la altura visible de la pantalla */
+max-width: 1600px;
+margin: 0 auto 15px auto;
+display: flex;
+justify-content: center;
+align-items: center;
 }
 
-/* Modificamos el recuadro cuando está en el escenario principal */
 #active-speaker-stage .video-container {
-  width: 100%;
-  max-width: 640px;
-  border-color: #43b581 !important; /* Borde verde Discord */
-  box-shadow: 0 0 25px rgba(67, 181, 129, 0.5);
+width: 100%;
+height: 100%;
+max-width: 1200px; /* Limita el ancho en pantallas ultra anchas */
+border-color: #43b581 !important;
+box-shadow: 0 0 30px rgba(67, 181, 129, 0.4);
 }
 /* === Estilos de la Grilla Inferior de Participantes === */
 #video-grid {
@@ -474,7 +487,7 @@ video {
   background: #1e1e24;
   border-radius: 12px;
   overflow: hidden;
-  aspect-ratio: 4/3;
+  aspect-ratio: 16/9; /* Formato panorámico ideal para el escenario en grande */
   border: 2px solid #2e2e38;
   transition: all 0.3s ease;
 }
