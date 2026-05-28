@@ -1,0 +1,26 @@
+doctype html
+html(lang="es")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    title Sala Llena - Video Chat
+    
+    // Importación de la fuente Poppins usada en tu proyecto
+    link(href="https://googleapis.com" rel="stylesheet")
+    
+    // Vinculación con tu archivo de estilos existente
+    link(rel="stylesheet" href="style.css")
+  body
+    .error-container
+      // Reutiliza tu animación popIn y el estilo de degradado de tus h1
+      h1 ¡Sala Llena!
+      
+      .message-card
+        // Icono visual estético
+        .icon-warning ⚠️
+        
+        // Texto descriptivo con la fuente de tus subtítulos
+        p(class="text-muted") Lo sentimos, la sala de video chat a la que intentas acceder ha alcanzado el límite máximo de participantes para garantizar la estabilidad de la llamada.
+        
+        // Botón de acción con los colores de tu gradiente principal
+        a.btn-redirect(href="/") Volver al inicio

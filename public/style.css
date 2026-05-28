@@ -1,13 +1,15 @@
-body { 
-    font-family: 'Poppins', sans-serif; 
-    /* Degradado pastel llamativo y limpio */
-    background: linear-gradient(135deg, #e0f2fe 0%, #f3e8ff 50%, #fce7f3 100%);
-    background-attachment: fixed; /* Mantiene el fondo estático al hacer scroll */
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100vh;
+  background-color: #121214;
+  font-family: Arial, sans-serif;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
 }
 
 @media (max-width: 600px) {
@@ -54,10 +56,13 @@ body {
 
 h1 {
   font-family: 'Poppins', 'Segoe UI', sans-serif;
-  font-size: 3rem;
   font-weight: 800;
-  margin: 10px 0 10px 0;
   letter-spacing: -1px;
+  text-align: center;
+  margin: 20px 0 10px 0;
+  font-size: 2.5rem;
+  color: #7289da;
+  width: 100%;
   
   /* Vibrant Gradient Text Effect */
   background: linear-gradient(135deg, #ff007f, #7000ff, #00c4ff);
@@ -141,13 +146,7 @@ h1 {
 .card-fr:hover { border-color: #4c51bf; }
 .card-fr .card-content { color: #434190; }
 
-#video-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  justify-content: center;
-  padding: 20px;
-}
+
 
 .sala-wrapper {
   padding: 40px;
@@ -171,34 +170,6 @@ h1 {
 }
 
 
-.video-container {
-  position: relative;
-  background: #1e293b; 
-  width: 210px;
-  height: 155px; 
-  border-radius: 16px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  border: 3px solid transparent; 
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;    
-  flex-shrink: 0; /* Evita que los recuadros se aplasten */
-}
-
-.video-container:hover {
-  transform: translateY(-5px);
-}
-
-video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover; 
-  background: #0f172a;
-}
-
 .video-username {
   position: absolute;
   bottom: 8px;
@@ -220,28 +191,6 @@ video {
   box-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
 }
 
-
-#video-grid {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 240px; /* Altura máxima de la barra inferior */
-  background: rgba(255, 255, 255, 0.75); /* Efecto cristalino traslúcido */
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-top: 1px solid rgba(255, 255, 255, 0.4);
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  gap: 15px;
-  padding: 0 20px;
-  box-sizing: border-box;
-  z-index: 999;
-  box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.04);
-  overflow-x: auto; /* Permite scroll horizontal si entran demasiados usuarios */
-}
 
 
 /*---------------------------------------------*/
@@ -449,13 +398,16 @@ video {
   background: #f04747;
   color: white;
   border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
+  padding: 10px 20px;
+  border-radius: 8px;
   font-weight: bold;
   cursor: pointer;
-  margin-bottom: 10px;
+  margin-bottom: 25px;
+  transition: background 0.2s;
 }
+
 .btn-leave:hover { background: #d83a3a; }
+
 #active-speaker-stage {
 width: 100%;
 height: 70vh; /* Ocupa el 70-80% de la altura visible de la pantalla */
@@ -467,32 +419,80 @@ align-items: center;
 }
 
 #active-speaker-stage .video-container {
-width: 100%;
-height: 100%;
-max-width: 1200px; /* Limita el ancho en pantallas ultra anchas */
-border-color: #43b581 !important;
-box-shadow: 0 0 30px rgba(67, 181, 129, 0.4);
+  width: 100%;
+  height: 100%;
+  max-height: 65vh;
+  aspect-ratio: 16 / 9;
+  border-color: #43b581 !important; /* Borde verde brillante */
+  box-shadow: 0 0 35px rgba(67, 181, 129, 0.4);
 }
+
 /* === Estilos de la Grilla Inferior de Participantes === */
 #video-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 20px;
-  padding: 10px;
+  width: 90%;
   max-width: 1400px;
+  padding-bottom: 40px;
   margin: 0 auto;
 }
+
 .video-container {
   position: relative;
   background: #1e1e24;
-  border-radius: 12px;
+  border-radius: 16px;
   overflow: hidden;
-  aspect-ratio: 16/9; /* Formato panorámico ideal para el escenario en grande */
   border: 2px solid #2e2e38;
   transition: all 0.3s ease;
+  aspect-ratio: 16 / 9;
 }
-video { width: 100%; height: 100%; object-fit: cover; }
-.username-tag { position: absolute; bottom: 12px; left: 12px; background: rgba(0, 0, 0, 0.7); color: #fff; padding: 6px 12px; border-radius: 6px; font-size: 14px; }
-.local-controls { position: absolute; bottom: 12px; right: 12px; display: flex; gap: 8px; z-index: 10; }
-.control-btn { background: rgba(0, 0, 0, 0.6); border: 1px solid #3a3a4a; color: white; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 16px; }
-.control-btn.mic-off, .control-btn.cam-off { background: rgba(240, 71, 71, 0.8); }
+
+video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.username-tag {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  z-index: 5;
+}
+
+.local-controls {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  display: flex;
+  gap: 8px;
+  z-index: 10;
+}
+
+.control-btn {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  border: 1px solid #3a3a4a;
+  color: white;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.2s;
+}
+
+.control-btn.mic-off, .control-btn.cam-off {
+  background: rgba(240, 71, 71, 0.8);
+  border-color: #f04747;
+}
