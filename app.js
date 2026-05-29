@@ -1,4 +1,5 @@
 const express = require('express');
+express.disable("x-powered-by");
 const { AccessToken, RoomServiceClient } = require('livekit-server-sdk')
 const fs = require('fs');
 const app = express();
