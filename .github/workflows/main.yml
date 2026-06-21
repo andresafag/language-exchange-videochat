@@ -9,7 +9,7 @@ jobs:
     steps:
       # Step to check out your repository's code
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           # Disabling shallow clones is recommended for better analysis relevancy
           fetch-depth: 0
