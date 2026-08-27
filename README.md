@@ -1,6 +1,4 @@
-# 🌍 Speakswap
-
-### Real-Time Language Exchange Platform Powered by WebRTC & LiveKit
+![Logo](speakswap.jpeg)
 
 ![Node.js](https://img.shields.io/badge/Node.js-18.x-green?logo=node.js)
 ![Express](https://img.shields.io/badge/Express.js-Backend-black?logo=express)
@@ -57,7 +55,44 @@ Speakswap uses a modern real-time communication architecture built around **Live
 
 ---
 
-# 🛠️ Tech Stack
+# � CI/CD and Quality Gates
+
+The project now includes a lightweight but production-minded GitHub Actions workflow that validates changes before they reach production.
+
+### What the workflow does
+
+- Runs on pushes and pull requests to the main branch
+- Installs dependencies with npm ci
+- Validates the Node.js application syntax
+- Executes a smoke test against the app health endpoint
+- Runs dependency auditing for obvious security issues
+- Performs a SonarQube scan for code quality and reliability
+- Checks that the Docker image can still be built successfully
+
+Because AWS App Runner already deploys automatically from GitHub updates, the workflow focuses on confidence, validation, and quality gates rather than duplicating deployment logic.
+
+### Project flow
+
+```mermaid
+%%{init: {'theme': 'dark', 'themeVariables': { 'primaryColor': '#0f172a', 'primaryTextColor': '#f8fafc', 'primaryBorderColor': '#38bdf8', 'lineColor': '#94a3b8', 'secondaryColor': '#111827', 'tertiaryColor': '#1e293b' }}}%%
+flowchart LR
+    A[Developer pushes changes] --> B[GitHub Actions CI]
+    B --> C[Install dependencies]
+    C --> D[Validate app syntax]
+    D --> E[Run smoke test]
+    E --> F[Audit dependencies]
+    F --> G[SonarQube analysis]
+    G --> H[Docker build check]
+    H --> I[App Runner deploys from GitHub]
+    I --> J[Express app serves users]
+    J --> K[LiveKit media rooms]
+    K --> L[Coturn relay for WebRTC]
+    L --> M[Users join real-time conversations]
+```
+
+---
+
+# �🛠️ Tech Stack
 
 ## Frontend
 
