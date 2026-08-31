@@ -38,60 +38,101 @@ html
         }
         const { Room, RoomEvent } = livekitSDK;
         let activeRoom = null;
-        // Función auxiliar para renderizar las ventanas de video
+        
+      
+        // Función auxiliar para renderizar las ventanas de video (Tu función original intacta)
         function createVideoElement(track, participantIdentity, isLocal = false) {
+          // Si ya existía un contenedor placeholder vacío para este usuario, lo eliminamos primero
+          const oldContainer = document.getElementById(`container-${participantIdentity}`);
+          if (oldContainer) oldContainer.remove();
+      
           const grid = document.getElementById('video-grid');
           
           const container = document.createElement('div');
           container.className = 'video-container';
           container.id = `container-${participantIdentity}`;
-  
+      
           const videoEl = track.attach();
           if (isLocal) videoEl.style.transform = 'scaleX(-1)'; // Efecto espejo para el usuario local
-  
+      
           const tag = document.createElement('div');
           tag.className = 'username-tag';
           tag.innerText = isLocal ? `${participantIdentity} (Tú)` : participantIdentity;
-  
+      
           container.appendChild(videoEl);
           container.appendChild(tag);
+          
           if (isLocal) {
             const controlsDiv = document.createElement('div');
             controlsDiv.className = 'local-controls';
-
+      
             // Botón de Micrófono
             const micBtn = document.createElement('button');
             micBtn.className = 'control-btn mic-on';
-            micBtn.innerHTML = '🎤'; // Icono básico, puedes usar FontAwesome después
+            micBtn.innerHTML = '🎤';
             micBtn.onclick = () => toggleMic(micBtn);
-
+      
             // Botón de Cámara
             const camBtn = document.createElement('button');
             camBtn.className = 'control-btn cam-on';
             camBtn.innerHTML = '📷';
             camBtn.onclick = () => toggleCam(camBtn);
-
+      
             controlsDiv.appendChild(micBtn);
             controlsDiv.appendChild(camBtn);
             container.appendChild(controlsDiv);
           }
           grid.appendChild(container);
         }
-
+      
+        // NUEVA FUNCIÓN: Genera el div obligatorio para usuarios sin cámara o micrófono
+        function createPlaceholderElement(participantIdentity, isLocal = false) {
+          if (document.getElementById(`container-${participantIdentity}`)) return;
+      
+          const grid = document.getElementById('video-grid');
+          const container = document.createElement('div');
+          container.className = 'video-container placeholder-container'; // Mantiene tus estilos de caja
+          container.id = `container-${participantIdentity}`;
+      
+          const tag = document.createElement('div');
+          tag.className = 'username-tag';
+          tag.innerText = isLocal ? `${participantIdentity} (Tú)` : participantIdentity;
+          container.appendChild(tag);
+      
+          // Si eres tú quien no tiene multimedia aún, igual te pintamos tus botones funcionales
+          if (isLocal) {
+            const controlsDiv = document.createElement('div');
+            controlsDiv.className = 'local-controls';
+      
+            const micBtn = document.createElement('button');
+            micBtn.className = 'control-btn mic-off';
+            micBtn.innerHTML = '🔇'; // Empieza apagado si caíste aquí
+            micBtn.onclick = () => toggleMic(micBtn);
+      
+            const camBtn = document.createElement('button');
+            camBtn.className = 'control-btn cam-off';
+            camBtn.innerHTML = '❌'; // Empieza apagado si caíste aquí
+            camBtn.onclick = () => toggleCam(camBtn);
+      
+            controlsDiv.appendChild(micBtn);
+            controlsDiv.appendChild(camBtn);
+            container.appendChild(controlsDiv);
+          }
+      
+          grid.appendChild(container);
+        }
+      
         async function toggleMic(button) {
           if (!activeRoom) return;
           const isMicEnabled = activeRoom.localParticipant.isMicrophoneEnabled;
-
-
+      
           try {
             if (!isMicEnabled) {
-              // Si estaba apagado, lo encendemos de forma nativa
               await activeRoom.localParticipant.setMicrophoneEnabled(true);
               button.innerHTML = '🎤';
               button.className = 'control-btn mic-on';
               console.log("Micrófono encendido con éxito");
             } else {
-              // Si estaba encendido, lo apagamos de forma nativa
               await activeRoom.localParticipant.setMicrophoneEnabled(false);
               button.innerHTML = '🔇';
               button.className = 'control-btn mic-off';
@@ -101,83 +142,78 @@ html
             console.error("Error al cambiar el estado del micrófono:", error);
           }
         }
-
-        // Lógica nativa de LiveKit para apagar/encender Cámara
+      
         async function toggleCam(button) {
           if (!activeRoom) return;
           const isCamEnabled = activeRoom.localParticipant.isCameraEnabled;
-
+      
           try {
             if (!isCamEnabled) {
-              // Si estaba apagada, la encendemos de forma nativa
               await activeRoom.localParticipant.setCameraEnabled(true);
               button.innerHTML = '📷';
               button.className = 'control-btn cam-on';
               console.log("Cámara encendida con éxito");
             } else {
-              // Si estaba encendida, la apagamos de forma nativa
               await activeRoom.localParticipant.setCameraEnabled(false);
               button.innerHTML = '❌'; 
               button.className = 'control-btn cam-off';
               console.log("Cámara apagada con éxito");
+              
+              // Al apagar tu cámara nativa, reemplazamos tu video por el placeholder para que no desaparezca tu div
+              createPlaceholderElement(activeRoom.localParticipant.identity, true);
             }
           } catch (error) {
             console.error("Error al cambiar el estado de la cámara:", error);
           }
         }
-  
+      
         async function joinVideoChat() {
-          // Inicializamos la configuración de la sala
           const room = new Room({ adaptiveStream: true, dynacast: true });
-          activeRoom = room
-
-                    // === LÓGICA DINÁMICA DE REORDENACIÓN EN ESCENARIO ===
+          activeRoom = room;
+      
+          // === LÓGICA DINÁMICA DE REORDENACIÓN EN ESCENARIO ===
           room.on(RoomEvent.ActiveSpeakersChanged, (speakers) => {
             const stage = document.getElementById('active-speaker-stage');
             const grid = document.getElementById('video-grid');
-
+      
             if (speakers.length > 0) {
               const loudest = speakers[0];
               const speakerContainer = document.getElementById(`container-${loudest.identity}`);
               
               if (speakerContainer && speakerContainer.parentElement !== stage) {
-                // Si el escenario ya tiene a alguien, regresamos a esa persona a la grilla inferior
                 if (stage.firstChild) {
                   grid.appendChild(stage.firstChild);
                 }
-                // Movemos al nuevo hablante activo al escenario superior
                 stage.appendChild(speakerContainer);
               }
             }
           });
-
+      
+          // Control de bloqueo de audio automático del navegador
           room.on(RoomEvent.AudioPlaybackStatusChanged, () => {
-          // Si el navegador bloqueó la reproducción automática de sonido de los demás...
-          if (!room.canPlaybackAudio) {
-            console.warn("El navegador bloqueó el audio entrante. Solicitando interacción...");
-
-            // Creamos un banner o aviso discreto flotante en la pantalla para obligar a dar un clic
-            const audioBanner = document.createElement('div');
-            audioBanner.id = 'audio-start-banner';
-            audioBanner.style = "position: fixed; top: 10px; left: 50%; transform: translateX(-50%); background: #f04747; color: white; padding: 12px 24px; border-radius: 8px; font-weight: bold; z-index: 9999; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.5);";
-            audioBanner.innerText = "🔊 Haz clic aquí para activar el audio de los participantes";
-
-            // Al hacer clic en el banner, disparamos el desbloqueo nativo del WebRTC del navegador
-            audioBanner.onclick = async () => {
-              try {
-                await room.startAudio(); // <-- Método oficial de LiveKit para forzar el sonido
-                console.log("Audio activado exitosamente.");
-                audioBanner.remove(); // Eliminamos el aviso una vez suene la sala
-              } catch (err) {
-                console.error("No se pudo iniciar el canal de audio:", err);
-              }
-            };
-
-            document.body.appendChild(audioBanner);
-          }
-        });
-  
-          // Evento: Se ejecuta cuando otro participante enciende su cámara
+            if (!room.canPlaybackAudio) {
+              console.warn("El navegador bloqueó el audio entrante. Solicitando interacción...");
+      
+              const audioBanner = document.createElement('div');
+              audioBanner.id = 'audio-start-banner';
+              audioBanner.style = "position: fixed; top: 10px; left: 50%; transform: translateX(-50%); background: #f04747; color: white; padding: 12px 24px; border-radius: 8px; font-weight: bold; z-index: 9999; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.5);";
+              audioBanner.innerText = "🔊 Haz clic aquí para activar el audio de los participantes";
+      
+              audioBanner.onclick = async () => {
+                try {
+                  await room.startAudio();
+                  console.log("Audio activado exitosamente.");
+                  audioBanner.remove();
+                } catch (err) {
+                  console.error("No se pudo iniciar el canal de audio:", err);
+                }
+              };
+      
+              document.body.appendChild(audioBanner);
+            }
+          });
+      
+          // Evento: Se ejecuta cuando otro participante enciende su cámara o activa audio
           room.on(RoomEvent.TrackSubscribed, (track, publication, participant) => {
             if (track.kind === 'video') {
               createVideoElement(track, participant.identity, false);
@@ -188,29 +224,53 @@ html
               document.body.appendChild(audioEl);
             }
           });
-  
-          // Evento: Se ejecuta cuando un participante apaga la cámara o abandona la sala
+      
+          // Evento: Si un participante apaga la cámara, NO borramos el contenedor, lo cambiamos a placeholder
           room.on(RoomEvent.TrackUnsubscribed, (track, publication, participant) => {
             track.detach();
             const container = document.getElementById(`container-${participant.identity}`);
             if (container) container.remove();
+            
+            // Creamos el placeholder de inmediato para que siga visible en pantalla sin multimedia
+            createPlaceholderElement(participant.identity, false);
           });
-  
+      
+          // Evento: Si entra alguien nuevo sin nada encendido, le creamos su div placeholder
+          room.on(RoomEvent.ParticipantConnected, (participant) => {
+            createPlaceholderElement(participant.identity, false);
+          });
+      
+          // Evento: Cuando tú te conectas, le creamos divs placeholder a todos los que ya estaban esperando mudos/sin video
+          room.on(RoomEvent.Connected, () => {
+            room.remoteParticipants.forEach((participant) => {
+              createPlaceholderElement(participant.identity, false);
+            });
+          });
+      
+          // Evento: Si un participante abandona la videollamada por completo, ahí sí borramos su div
+          room.on(RoomEvent.ParticipantDisconnected, (participant) => {
+            const container = document.getElementById(`container-${participant.identity}`);
+            if (container) container.remove();
+          });
+      
           // Conexión al backend de LiveKit Docker en tu instancia EC2
           await room.connect(LIVEKIT_URL, LIVEKIT_TOKEN);
           console.log("Conectado con éxito a LiveKit!");
-  
-          // Activamos cámara y micrófono locales e inyectamos nuestro feed
-          const videoPublication = await room.localParticipant.setCameraEnabled(true);
-          await room.localParticipant.setMicrophoneEnabled(true);
-          console.log('Cámara y Micrófono activados');          
-          const localVideoTrack = videoPublication.videoTrack;
-          if (localVideoTrack) {
-            createVideoElement(localVideoTrack, room.localParticipant.identity, true);
-          }
-        }
-  
-        // Iniciamos el flujo automático de conexión
-        joinVideoChat().catch(console.error);
-
-    
+      
+          // Intentamos activar cámara y micrófono locales
+          try {
+            const videoPublication = await room.localParticipant.setCameraEnabled(true);
+            await room.localParticipant.setMicrophoneEnabled(true);
+            console.log('Cámara y Micrófono activados');          
+            
+            const localVideoTrack = videoPublication.videoTrack;
+            if (localVideoTrack) {
+              createVideoElement(localVideoTrack, room.localParticipant.identity, true);
+            } else {
+              // Si no se obtuvo track de video por alguna razón, se genera tu div placeholder con botones
+              createPlaceholderElement(room.localParticipant.identity, true);
+              } catch (mediaError) {
+                console.warn("No se pudo acceder a la cámara/micrófono al entrar, creando placeholder local...", mediaError);
+                createPlaceholderElement(room.localParticipant.identity, true);
+              }
+            }
