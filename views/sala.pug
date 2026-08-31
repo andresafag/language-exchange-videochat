@@ -39,47 +39,43 @@ html
         const { Room, RoomEvent } = livekitSDK;
         let activeRoom = null;
         // Función auxiliar para renderizar las ventanas de video
-        function createVideoElement(track, participant, isLocal = false) {
-        // Buscamos el contenedor que YA fue creado al conectar al usuario
-        if (!track) return; 
+        function createVideoElement(track, participantIdentity, isLocal = false) {
+          const grid = document.getElementById('video-grid');
+          
+          const container = document.createElement('div');
+          container.className = 'video-container';
+          container.id = `container-${participantIdentity}`;
+  
+          const videoEl = track.attach();
+          if (isLocal) videoEl.style.transform = 'scaleX(-1)'; // Efecto espejo para el usuario local
+  
+          const tag = document.createElement('div');
+          tag.className = 'username-tag';
+          tag.innerText = isLocal ? `${participantIdentity} (Tú)` : participantIdentity;
+  
+          container.appendChild(videoEl);
+          container.appendChild(tag);
+          if (isLocal) {
+            const controlsDiv = document.createElement('div');
+            controlsDiv.className = 'local-controls';
 
-        const container = document.getElementById(`container-${participant.identity}`);
-        if (!container) return; 
-         container.innerText = '';
+            // Botón de Micrófono
+            const micBtn = document.createElement('button');
+            micBtn.className = 'control-btn mic-on';
+            micBtn.innerHTML = '🎤'; // Icono básico, puedes usar FontAwesome después
+            micBtn.onclick = () => toggleMic(micBtn);
 
-        // Limpiamos el texto provisional (el nombre suelto) para meter el diseño real
-        container.innerText = '';
+            // Botón de Cámara
+            const camBtn = document.createElement('button');
+            camBtn.className = 'control-btn cam-on';
+            camBtn.innerHTML = '📷';
+            camBtn.onclick = () => toggleCam(camBtn);
 
-        const videoEl = track.attach();
-        if (isLocal) videoEl.style.transform = 'scaleX(-1)'; 
-
-        const tag = document.createElement('div');
-        tag.className = 'username-tag';
-        tag.innerText = isLocal ? `${participant.identity} (Tú)` : participant.identity;
-
-        container.appendChild(videoEl);
-        container.appendChild(tag);
-
-        if (isLocal) {
-          const controlsDiv = document.createElement('div');
-          controlsDiv.className = 'local-controls';
-
-          // Botón de Micrófono
-          const micBtn = document.createElement('button');
-          micBtn.className = 'control-btn mic-on';
-          micBtn.innerHTML = '🎤';
-          micBtn.onclick = () => toggleMic(micBtn);
-
-          // Botón de Cámara
-          const camBtn = document.createElement('button');
-          camBtn.className = 'control-btn cam-on';
-          camBtn.innerHTML = '📷';
-          camBtn.onclick = () => toggleCam(camBtn);
-
-          controlsDiv.appendChild(micBtn);
-          controlsDiv.appendChild(camBtn);
-          container.appendChild(controlsDiv);
+            controlsDiv.appendChild(micBtn);
+            controlsDiv.appendChild(camBtn);
+            container.appendChild(controlsDiv);
           }
+          grid.appendChild(container);
         }
 
         async function toggleMic(button) {
@@ -135,6 +131,7 @@ html
           const room = new Room({ adaptiveStream: true, dynacast: true });
           activeRoom = room
 
+                    // === LÓGICA DINÁMICA DE REORDENACIÓN EN ESCENARIO ===
           room.on(RoomEvent.ActiveSpeakersChanged, (speakers) => {
             const stage = document.getElementById('active-speaker-stage');
             const grid = document.getElementById('video-grid');
@@ -180,6 +177,7 @@ html
           }
         });
   
+          // Evento: Se ejecuta cuando otro participante enciende su cámara
           room.on(RoomEvent.TrackSubscribed, (track, publication, participant) => {
             if (track.kind === 'video') {
               createVideoElement(track, participant.identity, false);
@@ -190,74 +188,13 @@ html
               document.body.appendChild(audioEl);
             }
           });
-
-          room.on(RoomEvent.TrackPublished, (publication, participant) => {
-            // Asegura que tu propio div exista en tu pantalla
-            ensureParticipantDiv(participant);
-
-            // Si la pista que acabas de publicar es de video, dibújala en tu pantalla
-            if (publication.kind === 'video' && publication.track) {
-              createVideoElement(publication.track, participant, true); // true porque eres local
-            }
-          });
   
           // Evento: Se ejecuta cuando un participante apaga la cámara o abandona la sala
-          room.on(RoomEvent.TrackSubscribed, (track, publication, participant) => {
-            // Nos aseguramos primero de que tenga su div pase lo que pase
-            ensureParticipantDiv(participant);
-
-            if (track.kind === 'video') {
-              // Pasamos el objeto 'participant' completo para usar su identity de forma segura
-              createVideoElement(track, participant, false);
-            }
-
-            if (track.kind === 'audio') {
-              console.log(`Recibiendo canal de audio de: ${participant.identity}`);
-              const audioEl = track.attach();
-              const container = document.getElementById(`container-${participant.identity}`);
-              if (container) container.appendChild(audioEl);
-            }
-          });
-
-                  room.on(RoomEvent.ParticipantConnected, (participant) => {
-            ensureParticipantDiv(participant);
-          });
-
-          // 3. Crear div para usuarios que ya estaban dentro cuando tú te conectaste
-          room.on(RoomEvent.Connected, () => {
-            room.remoteParticipants.forEach((participant) => {
-              ensureParticipantDiv(participant);
-            });
-            // Si manejas tu video local con eventos, también puedes asegurar tu propio div aquí:
-            if (room.localParticipant) {
-              ensureParticipantDiv(room.localParticipant);
-            }
-          });
-
-          // 4. Borrar el div al irse de la sala
-          room.on(RoomEvent.ParticipantDisconnected, (participant) => {
+          room.on(RoomEvent.TrackUnsubscribed, (track, publication, participant) => {
+            track.detach();
             const container = document.getElementById(`container-${participant.identity}`);
             if (container) container.remove();
           });
-
-          // 5. FUNCIÓN CENTRALIZADA PARA CREAR EL DIV OBLIGATORIO
-          function ensureParticipantDiv(participant) {
-            // Evitamos duplicados usando la identidad como en tu función original
-            if (document.getElementById(`container-${participant.identity}`)) return;
-
-            const grid = document.getElementById('video-grid');
-            const container = document.createElement('div');
-            container.className = 'video-container'; // Mantiene tus estilos CSS intactos
-            container.id = `container-${participant.identity}`;
-
-            // Estado inicial: Si no tiene video aún, muestra un marcador con su nombre
-            const placeholderTag = document.createElement('div');
-            placeholderTag.className = 'username-tag';
-            placeholderTag.innerText = participant.identity;
-            container.appendChild(placeholderTag);
-
-            grid.appendChild(container);
-          }
   
           // Conexión al backend de LiveKit Docker en tu instancia EC2
           await room.connect(LIVEKIT_URL, LIVEKIT_TOKEN);
