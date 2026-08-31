@@ -1,21 +1,52 @@
-name: Security scan
+name: CI Checks
 
-on: [push]
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  security-events: write
 
 jobs:
-  machine:
+  verify:
     runs-on: ubuntu-latest
 
     steps:
-      # Step to check out your repository's code
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          # Disabling shallow clones is recommended for better analysis relevancy
           fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate app syntax
+        run: node --check app.js
+
+      - name: Run smoke test
+        run: npm run test:smoke
+
+      - name: Audit dependencies
+        run: npm audit --omit=dev
+        continue-on-error: true
 
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v7.2.0
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
           

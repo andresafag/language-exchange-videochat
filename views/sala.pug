@@ -47,7 +47,7 @@ html
           container.id = `container-${participantIdentity}`;
   
           const videoEl = track.attach();
-          if (isLocal) videoEl.style.transform = 'scaleX(-1)'; // Efecto espejo para el usuario local
+          if (isLocal) videoEl.style.transform = 'scaleX(-1)'; 
   
           const tag = document.createElement('div');
           tag.className = 'username-tag';
@@ -131,7 +131,6 @@ html
           const room = new Room({ adaptiveStream: true, dynacast: true });
           activeRoom = room
 
-                    // === LÓGICA DINÁMICA DE REORDENACIÓN EN ESCENARIO ===
           room.on(RoomEvent.ActiveSpeakersChanged, (speakers) => {
             const stage = document.getElementById('active-speaker-stage');
             const grid = document.getElementById('video-grid');

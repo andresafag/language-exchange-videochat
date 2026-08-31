@@ -10,6 +10,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 const REMOTE_IP = process.env.MY_TARGET_IP
+const myappkey = process.env.MY_APP_KEY;
+const myappsecret = process.env.MY_APP_SECRET;
 
 const salas = [
     { id: 'en', nombre: 'Inglés', pais: 'EE.UU.', img: 'https://speakswap-website.s3.us-east-1.amazonaws.com/liberty.png' },
@@ -21,8 +23,8 @@ const salas = [
 
 const roomService = new RoomServiceClient(
 `https://${REMOTE_IP}`,
-  "myappkey", 
-  "myappsecret"
+  myappkey, 
+  myappsecret
 );
 
 // Route to render index page
@@ -30,6 +32,9 @@ app.get('/', (req, res) => {
   res.render('index', { salas });
 });
 
+app.get('/health', (req, res) => {
+  res.status(200).send('ok');
+});
 
 app.get('/sala/:id', async (req, res) => {
   const roomId = req.params.id; // 'en', 'es', etc.
@@ -47,7 +52,7 @@ app.get('/sala/:id', async (req, res) => {
 
   try {
     // Generate the secure LiveKit token for this user and this specific room
-    const at = new AccessToken('myappkey', 'myappsecret', {
+    const at = new AccessToken(myappkey, myappsecret, {
       identity: participantName,
     });
 
