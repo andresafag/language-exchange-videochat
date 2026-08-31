@@ -176,7 +176,6 @@ html
           }
         });
   
-          // Evento: Se ejecuta cuando otro participante enciende su cámara
           room.on(RoomEvent.TrackSubscribed, (track, publication, participant) => {
             if (track.kind === 'video') {
               createVideoElement(track, participant.identity, false);
@@ -194,6 +193,36 @@ html
             const container = document.getElementById(`container-${participant.identity}`);
             if (container) container.remove();
           });
+
+          room.on(RoomEvent.ParticipantConnected, (participant) => {
+            ensureParticipantDiv(participant);
+          });
+
+          // 3. AGREGAR AQUÍ: Crear div para los que ya estaban en la sala al conectarte
+          room.on(RoomEvent.Connected, () => {
+            room.remoteParticipants.forEach((participant) => {
+              ensureParticipantDiv(participant);
+            });
+          });
+
+          // 4. AGREGAR AQUÍ: Borrar el div si se van de la sala
+          room.on(RoomEvent.ParticipantDisconnected, (participant) => {
+            const container = document.getElementById(`container-${participant.sid}`);
+            if (container) container.remove();
+          });
+
+          // 5. FUNCIÓN AUXILIAR (Colócala al final de tu archivo)
+          function ensureParticipantDiv(participant) {
+            if (document.getElementById(`container-${participant.sid}`)) return;
+
+            const container = document.createElement('div');
+            container.id = `container-${participant.sid}`;
+            container.className = 'participant-box'; // Tu clase CSS
+            container.innerText = participant.identity; 
+
+            // Cambia 'video-grid' por el ID del contenedor padre en tu HTML
+            document.getElementById('video-grid').appendChild(container);
+          }
   
           // Conexión al backend de LiveKit Docker en tu instancia EC2
           await room.connect(LIVEKIT_URL, LIVEKIT_TOKEN);
